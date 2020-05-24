@@ -1,9 +1,16 @@
 package data
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"time"
 	auth "traceability/auth"
+	db "traceability/database"
 
 	guuid "github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Users is list of the User
@@ -41,7 +48,7 @@ type User struct {
 
 	// role
 	//
-	// required: true
+	// required: false
 	Role int `json:"role"`
 
 	// projects of the insect as list
@@ -52,6 +59,31 @@ type User struct {
 
 // GetAllUsers returns all users
 func GetAllUsers() Users {
+
+	collection := db.DB.Collection(db.UserCollectionName)
+	cur, err := collection.Find(context.TODO(), bson.D{{}})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+	for cur.Next(context.TODO()) {
+		var elem User
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		userList = append(userList, &elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	cur.Close(context.TODO())
+
 	return userList
 }
 
@@ -60,16 +92,65 @@ func AddUser(u User) {
 	u.ID = guuid.New().String()
 	u.Password = auth.HashAndSalt([]byte(u.Password))
 	u.Role = 1
+
+	collection := db.DB.Collection(db.UserCollectionName)
+	insertResult, err := collection.InsertOne(context.TODO(), u)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+
 	userList = append(userList, &u)
 }
 
-var userList = []*User{
-	{
-		ID:   "askfhasuhfaskhfjaoiwruy981234yrqufh",
-		Name: "Fatih",
-	},
-	{
-		ID:   "askjfghasukfjhgrqiua24h12u34uyrhbahsfbn",
-		Name: "Pinar",
-	},
+// FindUserByID returns user or error
+func FindUserByID(id string) (User, error) {
+	exp := 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), exp)
+	defer cancel()
+
+	collection := db.DB.Collection(db.UserCollectionName)
+
+	// filter with internal id
+	var resultUser User
+
+	filter := bson.D{{"id", id}}
+	err := collection.FindOne(ctx, filter).Decode(&resultUser)
+	return resultUser, err
 }
+
+// FindUserAndUpdateAccessToken updates the user accesstoken
+func FindUserAndUpdateAccessToken(user User) (bson.M, error) {
+	exp := 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), exp)
+	defer cancel()
+
+	collection := db.DB.Collection(db.UserCollectionName)
+	// filter with internal id
+	filter := bson.M{"id": user.ID}
+
+	// Create the update
+	update := bson.M{
+		"$set": bson.M{"accesstoken": user.AccessToken},
+	}
+
+	// Create an instance of an options and set the desired options
+	upsert := true
+	after := options.After
+	opt := options.FindOneAndUpdateOptions{
+		ReturnDocument: &after,
+		Upsert:         &upsert,
+	}
+
+	// Find one result and update it
+	result := collection.FindOneAndUpdate(ctx, filter, update, &opt)
+	if result.Err() != nil {
+		return nil, result.Err()
+	}
+	// Decode the result
+	doc := bson.M{}
+	decodeErr := result.Decode(&doc)
+	return doc, decodeErr
+}
+
+var userList Users

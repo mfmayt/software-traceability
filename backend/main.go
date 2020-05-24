@@ -12,7 +12,7 @@ import (
 	auth "traceability/auth"
 	data "traceability/data"
 	"traceability/database"
-	handlers "traceability/handlers"
+	userHandlers "traceability/handlers/user"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,7 +23,7 @@ const address = ":8080"
 const (
 	dbHost = "localhost"
 	dbPort = 27017
-	dbName = "pqsltestdb"
+	dbName = "traceability"
 )
 
 func main() {
@@ -33,13 +33,19 @@ func main() {
 	sm := mux.NewRouter()
 	l := log.New(os.Stdout, "chat-api", log.LstdFlags)
 	v := data.NewValidation()
-	uh := handlers.NewUsers(l, v)
-	getUs := sm.Methods(http.MethodGet).Subrouter()
-	getUs.HandleFunc("/users", uh.ListAll)
+	uh := userHandlers.NewUsers(l, v)
+	getUserList := sm.Methods(http.MethodGet).Subrouter()
+	getUserList.HandleFunc("/users", uh.ListAll)
+
+	getUser := sm.Methods(http.MethodGet).Subrouter()
+	getUser.HandleFunc("/users/{id}", uh.GetUser)
+
 	postUs := sm.Methods(http.MethodPost).Subrouter()
 	postUs.HandleFunc("/user", uh.CreateUser)
 	postUs.Use(auth.Middleware)
 	postUs.Use(uh.MiddlewareValidateUser)
+	// newUser := data.User{Name: "fatih test", Password: "123123", Email: "asdasf@asd.com", Role: 1}
+	// data.AddUser(newUser)
 
 	loginUser := sm.Methods(http.MethodPost).Subrouter()
 	loginUser.HandleFunc("/login", uh.LoginUser)
