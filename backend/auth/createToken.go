@@ -10,7 +10,7 @@ import (
 func CreateToken(email string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": email,
-		"exp":  time.Now().Add(time.Hour * time.Duration(1)).Unix(),
+		"exp":  time.Now().Add(time.Hour * time.Duration(1000)).Unix(),
 		"iat":  time.Now().Unix(),
 	})
 	tokenString, err := token.SignedString([]byte(AppKey))

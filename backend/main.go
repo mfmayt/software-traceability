@@ -39,6 +39,7 @@ func main() {
 
 	getUser := sm.Methods(http.MethodGet).Subrouter()
 	getUser.HandleFunc("/users/{id}", uh.GetUser)
+	getUser.Use(auth.Middleware)
 
 	postUs := sm.Methods(http.MethodPost).Subrouter()
 	postUs.HandleFunc("/user", uh.CreateUser)
