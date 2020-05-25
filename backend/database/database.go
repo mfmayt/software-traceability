@@ -5,6 +5,9 @@ import "go.mongodb.org/mongo-driver/mongo"
 const (
 	// UserCollectionName is the table name of the users
 	UserCollectionName = "users"
+
+	// ProjectCollectionName is the table name of the projects
+	ProjectCollectionName = "projects"
 )
 
 var (

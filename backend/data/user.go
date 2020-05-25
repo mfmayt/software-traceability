@@ -49,16 +49,17 @@ type User struct {
 	// role
 	//
 	// required: false
-	Role int `json:"role"`
+	Role string `json:"role"`
 
 	// projects of the insect as list
 	//
 	// required: false
-	ProjectIDs []string `json:"projectIDs"`
+	ProjectIDs []string `json:"projectIDs,omitempty"`
 }
 
 // GetAllUsers returns all users
 func GetAllUsers() Users {
+	var result []*User
 
 	collection := db.DB.Collection(db.UserCollectionName)
 	cur, err := collection.Find(context.TODO(), bson.D{{}})
@@ -75,7 +76,7 @@ func GetAllUsers() Users {
 		if err != nil {
 			log.Fatal(err)
 		}
-		userList = append(userList, &elem)
+		result = append(result, &elem)
 	}
 
 	if err := cur.Err(); err != nil {
@@ -84,14 +85,14 @@ func GetAllUsers() Users {
 
 	cur.Close(context.TODO())
 
-	return userList
+	return result
 }
 
 // AddUser adds a new user to the database
 func AddUser(u User) {
 	u.ID = guuid.New().String()
 	u.Password = auth.HashAndSalt([]byte(u.Password))
-	u.Role = 1
+	u.Role = "developer"
 
 	collection := db.DB.Collection(db.UserCollectionName)
 	insertResult, err := collection.InsertOne(context.TODO(), u)

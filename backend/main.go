@@ -12,6 +12,7 @@ import (
 	auth "traceability/auth"
 	data "traceability/data"
 	"traceability/database"
+	projectHandlers "traceability/handlers/project"
 	userHandlers "traceability/handlers/user"
 
 	"github.com/gorilla/mux"
@@ -34,6 +35,8 @@ func main() {
 	l := log.New(os.Stdout, "chat-api", log.LstdFlags)
 	v := data.NewValidation()
 	uh := userHandlers.NewUsers(l, v)
+	ph := projectHandlers.NewProjects(l, v)
+
 	getUserList := sm.Methods(http.MethodGet).Subrouter()
 	getUserList.HandleFunc("/users", uh.ListAll)
 
@@ -42,9 +45,18 @@ func main() {
 	getUser.Use(auth.Middleware)
 
 	postUs := sm.Methods(http.MethodPost).Subrouter()
-	postUs.HandleFunc("/user", uh.CreateUser)
-	postUs.Use(auth.Middleware)
+	postUs.HandleFunc("/users", uh.CreateUser)
 	postUs.Use(uh.MiddlewareValidateUser)
+
+	getProj := sm.Methods(http.MethodGet).Subrouter()
+	getProj.HandleFunc("/projects/{id}", ph.GetProject)
+	getProj.Use(auth.Middleware)
+
+	postProj := sm.Methods(http.MethodPost).Subrouter()
+	postProj.HandleFunc("/projects", ph.CreateProject)
+	postProj.Use(ph.MiddlewareValidateProject)
+
+	// postUs.Use(auth.Middleware)
 	// newUser := data.User{Name: "fatih test", Password: "123123", Email: "asdasf@asd.com", Role: 1}
 	// data.AddUser(newUser)
 
