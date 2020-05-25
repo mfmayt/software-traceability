@@ -15,10 +15,7 @@ func CreateToken(email string) (string, error) {
 	})
 	tokenString, err := token.SignedString([]byte(AppKey))
 	if err != nil {
-		// w.WriteHeader(http.StatusInternalServerError)
-		// io.WriteString(w, `{"error":"token_generation_failed"}`)
 		return "nil", err
 	}
-	// io.WriteString(w, `{"token":"`+tokenString+`"}`)
 	return tokenString, err
 }
