@@ -24,7 +24,7 @@ func (u *Users) ListAll(rw http.ResponseWriter, r *http.Request) {
 	err := data.ToJSON(users, rw)
 	if err != nil {
 		// we should never be here but log the error just incase
-		u.l.Println("[ERROR] serializing product", err)
+		u.l.Println("[ERROR] serializing user", err)
 	}
 }
 
@@ -35,7 +35,7 @@ func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
 	userID := data.GetUserIDFromContext(r.Context())
 
 	if userID == "" {
-		io.WriteString(rw, `{{"error": " not authenticated"}}`)
+		io.WriteString(rw, `{{"error": "401 not authenticated"}}`)
 		return
 	}
 

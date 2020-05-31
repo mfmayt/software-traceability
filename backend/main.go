@@ -53,13 +53,14 @@ func main() {
 	getProj.Use(auth.Middleware)
 	getProj.Use(ph.MiddlewareValidatePermission)
 
+	getProjList := sm.Methods(http.MethodGet).Subrouter()
+	getProjList.HandleFunc("/projects", ph.ListAll)
+	getProjList.Use(auth.Middleware)
+
 	postProj := sm.Methods(http.MethodPost).Subrouter()
 	postProj.HandleFunc("/projects", ph.CreateProject)
+	postProj.Use(auth.Middleware)
 	postProj.Use(ph.MiddlewareValidateProject)
-
-	// postUs.Use(auth.Middleware)
-	// newUser := data.User{Name: "fatih test", Password: "123123", Email: "asdasf@asd.com", Role: 1}
-	// data.AddUser(newUser)
 
 	loginUser := sm.Methods(http.MethodPost).Subrouter()
 	loginUser.HandleFunc("/login", uh.LoginUser)

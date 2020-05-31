@@ -127,7 +127,7 @@ func GetUserIDFromContext(ctx context.Context) string {
 
 		mapClaims := user.(*jwt.Token).Claims.(jwt.MapClaims)
 		userID, ok := mapClaims["userid"].(string)
-		if userID != "" && !ok {
+		if userID != "" && ok {
 			return userID
 		}
 	}

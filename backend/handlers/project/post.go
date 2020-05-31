@@ -16,6 +16,7 @@ import (
 // CreateProject handles POST requests to add new user
 func (p *Projects) CreateProject(rw http.ResponseWriter, r *http.Request) {
 	project := r.Context().Value(KeyProject{}).(*data.Project)
-	p.l.Printf("[DEBUG] Inserting user: %#v\n", project)
-	data.AddProject(*project, "TODO: id of the owner")
+	ownerID := data.GetUserIDFromContext(r.Context())
+	p.l.Printf("[DEBUG] Inserting user: %#v, from owner with id: %#v\n", project, ownerID)
+	data.AddProject(*project, ownerID)
 }

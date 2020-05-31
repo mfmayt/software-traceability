@@ -50,8 +50,8 @@ type Project struct {
 
 	// UserStoriesID
 	//
-	// required: true
-	UserStoriesID string `json:"userStory" validate:"required"`
+	// required: false
+	UserStoriesID string `json:"userStory"`
 
 	// token
 	//
@@ -76,12 +76,12 @@ func GetAllProjects() Projects {
 	collection := db.DB.Collection(db.ProjectCollectionName)
 	cur, err := collection.Find(context.TODO(), bson.D{{}})
 
+	defer cur.Close(context.TODO())
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Finding multiple documents returns a cursor
-	// Iterating through the cursor allows us to decode documents one at a time
 	for cur.Next(context.TODO()) {
 		var elem Project
 		err := cur.Decode(&elem)
@@ -94,8 +94,6 @@ func GetAllProjects() Projects {
 	if err := cur.Err(); err != nil {
 		log.Fatal(err)
 	}
-
-	cur.Close(context.TODO())
 
 	return result
 }
@@ -154,6 +152,5 @@ func FindMemberRoleInProject(projectID string, userID string) string {
 // UserHasPermission returns boolean value for about permission
 func UserHasPermission(projectID string, userID string, permission string) bool {
 	memberRole := FindMemberRoleInProject(projectID, userID)
-
 	return permission == memberRole
 }
