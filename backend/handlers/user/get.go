@@ -32,6 +32,13 @@ func (u *Users) ListAll(rw http.ResponseWriter, r *http.Request) {
 func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 
+	userID := data.GetUserIDFromContext(r.Context())
+
+	if userID == "" {
+		io.WriteString(rw, `{{"error": " not authenticated"}}`)
+		return
+	}
+
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
@@ -39,7 +46,12 @@ func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := data.FindUserByID(id)
+	if userID != id || data.IsUserRole("admin", userID) {
+		io.WriteString(rw, `{{"error": "user not authenticated"}}`)
+		return
+	}
+
+	user, err := data.FindUserByID(userID)
 
 	if err != nil {
 		io.WriteString(rw, `{{"error": "user not found"}}`)

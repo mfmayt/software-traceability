@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"time"
-	auth "traceability/auth"
 	db "traceability/database"
 
+	"github.com/dgrijalva/jwt-go"
 	guuid "github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -91,7 +92,7 @@ func GetAllUsers() Users {
 // AddUser adds a new user to the database
 func AddUser(u User) {
 	u.ID = guuid.New().String()
-	u.Password = auth.HashAndSalt([]byte(u.Password))
+	u.Password = HashAndSalt([]byte(u.Password))
 	u.Role = "developer"
 
 	collection := db.DB.Collection(db.UserCollectionName)
@@ -115,8 +116,40 @@ func FindUserByID(id string) (User, error) {
 	// filter with internal id
 	var resultUser User
 
-	filter := bson.D{{"id", id}}
+	filter := bson.D{primitive.E{Key: "id", Value: id}}
 	err := collection.FindOne(ctx, filter).Decode(&resultUser)
+	return resultUser, err
+}
+
+// GetUserIDFromContext returns user id from jwt token context
+func GetUserIDFromContext(ctx context.Context) string {
+	if user := ctx.Value("user"); user != nil {
+
+		mapClaims := user.(*jwt.Token).Claims.(jwt.MapClaims)
+		userID, ok := mapClaims["userid"].(string)
+		if userID != "" && !ok {
+			return userID
+		}
+	}
+	return ""
+}
+
+// FindUserByAccessToken returns user or error
+func FindUserByAccessToken(token string) (User, error) {
+	collection := db.DB.Collection(db.UserCollectionName)
+	filter := bson.M{"accessToken": token}
+	var resultUser User
+	err := collection.FindOne(context.TODO(), filter).Decode(&resultUser)
+	return resultUser, err
+}
+
+// FindUserByEmail returns user or error
+func FindUserByEmail(email string) (User, error) {
+	collection := db.DB.Collection(db.UserCollectionName)
+	filter := bson.M{"email": email}
+	var resultUser User
+	err := collection.FindOne(context.TODO(), filter).Decode(&resultUser)
+
 	return resultUser, err
 }
 
@@ -152,6 +185,31 @@ func FindUserAndUpdateAccessToken(user User) (bson.M, error) {
 	doc := bson.M{}
 	decodeErr := result.Decode(&doc)
 	return doc, decodeErr
+}
+
+// FindUserRole returns boolean value for about permission
+func FindUserRole(userID string) (string, error) {
+	user, err := FindUserByID(userID)
+
+	if err != nil {
+		return "", err
+	}
+
+	userRole := user.Role
+
+	return userRole, nil
+}
+
+// IsUserRole returns boolean value for about permission
+func IsUserRole(role string, userID string) bool {
+
+	userRole, err := FindUserRole(userID)
+
+	if err != nil {
+		return false
+	}
+
+	return userRole == role
 }
 
 var userList Users

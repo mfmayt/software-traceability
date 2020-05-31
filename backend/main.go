@@ -10,7 +10,7 @@ import (
 	"time"
 
 	auth "traceability/auth"
-	data "traceability/data"
+	"traceability/data"
 	"traceability/database"
 	projectHandlers "traceability/handlers/project"
 	userHandlers "traceability/handlers/user"
@@ -51,6 +51,7 @@ func main() {
 	getProj := sm.Methods(http.MethodGet).Subrouter()
 	getProj.HandleFunc("/projects/{id}", ph.GetProject)
 	getProj.Use(auth.Middleware)
+	getProj.Use(ph.MiddlewareValidatePermission)
 
 	postProj := sm.Methods(http.MethodPost).Subrouter()
 	postProj.HandleFunc("/projects", ph.CreateProject)

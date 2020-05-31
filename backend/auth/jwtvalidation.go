@@ -19,11 +19,13 @@ func Middleware(next http.Handler) http.Handler {
 	if len(AppKey) == 0 {
 		log.Fatal("HTTP server unable to start, expected an APP_KEY for JWT auth")
 	}
+
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
 		ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 			return []byte(AppKey), nil
 		},
 		SigningMethod: jwt.SigningMethodHS256,
 	})
+
 	return jwtMiddleware.Handler(next)
 }

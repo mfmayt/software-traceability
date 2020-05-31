@@ -24,7 +24,7 @@ func (p *Projects) ListAll(rw http.ResponseWriter, r *http.Request) {
 	err := data.ToJSON(projects, rw)
 	if err != nil {
 		// we should never be here but log the error just incase
-		p.l.Println("[ERROR] serializing projects", err)
+		p.l.Println("[ERROR] serializing project", err)
 	}
 }
 
@@ -36,6 +36,18 @@ func (p *Projects) GetProject(rw http.ResponseWriter, r *http.Request) {
 	id, ok := vars["id"]
 	if !ok {
 		io.WriteString(rw, `{{"error": "id not found"}}`)
+		return
+	}
+
+	userID := data.GetUserIDFromContext(r.Context())
+
+	if userID != "" {
+		if data.UserHasPermission(id, userID, "member") {
+			io.WriteString(rw, `{{"error": "user not authenticated"}}`)
+			return
+		}
+	} else {
+		io.WriteString(rw, `{{"error": "user not authenticated"}}`)
 		return
 	}
 

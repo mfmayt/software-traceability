@@ -9,6 +9,7 @@ import (
 
 	guuid "github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Projects is list of the User
@@ -127,7 +128,32 @@ func FindProjectByID(id string) (Project, error) {
 	// filter with internal id
 	var resultProject Project
 
-	filter := bson.D{{"id", id}}
+	filter := bson.D{primitive.E{Key: "id", Value: id}}
 	err := collection.FindOne(ctx, filter).Decode(&resultProject)
 	return resultProject, err
+}
+
+// FindMemberRoleInProject finds the role of the user in the projext
+func FindMemberRoleInProject(projectID string, userID string) string {
+	project, err := FindProjectByID(projectID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	members := project.Members
+
+	for _, v := range members {
+		if v.ID == userID {
+			return v.Role
+		}
+	}
+
+	return "anonymos"
+}
+
+// UserHasPermission returns boolean value for about permission
+func UserHasPermission(projectID string, userID string, permission string) bool {
+	memberRole := FindMemberRoleInProject(projectID, userID)
+
+	return permission == memberRole
 }

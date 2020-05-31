@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"time"
 	authentication "traceability/auth"
 	data "traceability/data"
 	db "traceability/database"
@@ -38,23 +39,30 @@ func (p *Users) LoginUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(resultUser.Password),[]byte(auth.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(resultUser.Password), []byte(auth.Password))
 
-	if err != nil{
+	if err != nil {
 		rw.WriteHeader(http.StatusUnauthorized)
 		io.WriteString(rw, `{{"error":"invalid_credentials"}}`)
 		return
 	}
 
 	accessToken, err := authentication.CreateToken(auth.Email)
-	
-	if err != nil{
+
+	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		io.WriteString(rw, `{{"error":"server is not working"}}`)
 		return
 	}
 
 	resultUser.AccessToken = accessToken
+	expirationTime := time.Now().Add(1200 * time.Hour)
+
+	http.SetCookie(rw, &http.Cookie{
+		Name:    "accesstoken",
+		Value:   accessToken,
+		Expires: expirationTime,
+	})
 	data.FindUserAndUpdateAccessToken(resultUser)
 	io.WriteString(rw, `{}`)
 	return
