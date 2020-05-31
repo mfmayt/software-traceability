@@ -10,6 +10,7 @@ import (
 	db "traceability/database"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,7 +27,7 @@ func (p *Users) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	auth := r.Context().Value(KeyAuth{}).(*data.Auth)
 	p.l.Printf("[DEBUG] Login user: %#v\n", auth.Email)
 
-	filter := bson.D{{"email", auth.Email}}
+	filter := bson.D{primitive.E{Key: "email", Value: auth.Email}}
 	collection := db.DB.Collection(db.UserCollectionName)
 
 	var resultUser data.User
