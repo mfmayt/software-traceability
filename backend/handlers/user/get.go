@@ -46,7 +46,7 @@ func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userID != id || data.IsUserRole("admin", userID) {
+	if userID == "" && (userID != id || data.IsUserRole("admin", userID)) {
 		io.WriteString(rw, `{{"error": "user not authenticated"}}`)
 		return
 	}
