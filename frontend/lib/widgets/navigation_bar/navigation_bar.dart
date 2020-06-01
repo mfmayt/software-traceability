@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/widgets/navigation_bar/navbar_item.dart';
-import 'package:frontend/widgets/navigation_bar/navbar_logo.dart';
 import 'package:frontend/widgets/navigation_bar/navigation_bar_tablet_desktop.dart';
 import 'package:frontend/widgets/navigation_bar/navigation_bat_mobile.dart';
 import 'package:responsive_builder/responsive_builder.dart';
