@@ -8,6 +8,9 @@ const (
 
 	// ProjectCollectionName is the table name of the projects
 	ProjectCollectionName = "projects"
+
+	// ArchViewCollectionName is the table name of the views
+	ArchViewCollectionName = "archviews"
 )
 
 var (
