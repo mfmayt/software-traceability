@@ -34,7 +34,7 @@ func (p *Projects) MiddlewareValidateProject(next http.Handler) http.Handler {
 			return
 		}
 
-		// add the user to the context
+		// add the project to the context
 		ctx := context.WithValue(r.Context(), KeyProject{}, project)
 		r = r.WithContext(ctx)
 

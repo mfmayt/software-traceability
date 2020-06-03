@@ -21,7 +21,7 @@ func NewProjects(l *log.Logger, v *data.Validation) *Projects {
 }
 
 // ErrInvalidProductPath is an error message when the user path is not valid
-var ErrInvalidProductPath = fmt.Errorf("Invalid Path, path should be /users/[id]")
+var ErrInvalidProductPath = fmt.Errorf("Invalid Path, path should be /projects/[id]")
 
 // GenericError is a generic error message returned by a server
 type GenericError struct {

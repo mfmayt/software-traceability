@@ -12,6 +12,9 @@ import (
 	auth "traceability/auth"
 	"traceability/data"
 	"traceability/database"
+	archViewHandlers "traceability/handlers/archview"
+
+	componentHandlers "traceability/handlers/archviewcomponents"
 	projectHandlers "traceability/handlers/project"
 	userHandlers "traceability/handlers/user"
 
@@ -32,39 +35,16 @@ func main() {
 	connectDB()
 
 	sm := mux.NewRouter()
-	l := log.New(os.Stdout, "chat-api", log.LstdFlags)
+	l := log.New(os.Stdout, "traceability-api", log.LstdFlags)
 	v := data.NewValidation()
 	uh := userHandlers.NewUsers(l, v)
 	ph := projectHandlers.NewProjects(l, v)
-
-	getUserList := sm.Methods(http.MethodGet).Subrouter()
-	getUserList.HandleFunc("/users", uh.ListAll)
-
-	getUser := sm.Methods(http.MethodGet).Subrouter()
-	getUser.HandleFunc("/users/{id}", uh.GetUser)
-	getUser.Use(auth.Middleware)
-
-	postUs := sm.Methods(http.MethodPost).Subrouter()
-	postUs.HandleFunc("/users", uh.CreateUser)
-	postUs.Use(uh.MiddlewareValidateUser)
-
-	getProj := sm.Methods(http.MethodGet).Subrouter()
-	getProj.HandleFunc("/projects/{id}", ph.GetProject)
-	getProj.Use(auth.Middleware)
-	getProj.Use(ph.MiddlewareValidatePermission)
-
-	getProjList := sm.Methods(http.MethodGet).Subrouter()
-	getProjList.HandleFunc("/projects", ph.ListAll)
-	getProjList.Use(auth.Middleware)
-
-	postProj := sm.Methods(http.MethodPost).Subrouter()
-	postProj.HandleFunc("/projects", ph.CreateProject)
-	postProj.Use(auth.Middleware)
-	postProj.Use(ph.MiddlewareValidateProject)
-
-	loginUser := sm.Methods(http.MethodPost).Subrouter()
-	loginUser.HandleFunc("/login", uh.LoginUser)
-	loginUser.Use(uh.MiddlewareValidateAuth)
+	ah := archViewHandlers.NewArchViews(l, v)
+	ch := componentHandlers.NewArchViewComponents(l, v)
+	setUserEndpoints(sm, uh)
+	setProjectEndpoints(sm, ph)
+	setArchViewEndpoints(sm, ah)
+	setArchViewComponentEndpoints(sm, ch)
 
 	s := http.Server{
 		Addr:         address,           // configure the bind address
@@ -121,4 +101,59 @@ func connectDB() {
 	database.DB = db
 
 	fmt.Println("Connected to MongoDB!")
+}
+
+func setUserEndpoints(sm *mux.Router, uh *userHandlers.Users) {
+	getUserList := sm.Methods(http.MethodGet).Subrouter()
+	getUserList.HandleFunc("/users", uh.ListAll)
+
+	getUser := sm.Methods(http.MethodGet).Subrouter()
+	getUser.HandleFunc("/users/{id}", uh.GetUser)
+	getUser.Use(auth.Middleware)
+
+	postUs := sm.Methods(http.MethodPost).Subrouter()
+	postUs.HandleFunc("/users", uh.CreateUser)
+	postUs.Use(uh.MiddlewareValidateUser)
+
+	loginUser := sm.Methods(http.MethodPost).Subrouter()
+	loginUser.HandleFunc("/login", uh.LoginUser)
+	loginUser.Use(uh.MiddlewareValidateAuth)
+}
+
+func setProjectEndpoints(sm *mux.Router, ph *projectHandlers.Projects) {
+	getProj := sm.Methods(http.MethodGet).Subrouter()
+	getProj.HandleFunc("/projects/{id}", ph.GetProject)
+	getProj.Use(auth.Middleware)
+	getProj.Use(ph.MiddlewareValidatePermission)
+
+	getProjList := sm.Methods(http.MethodGet).Subrouter()
+	getProjList.HandleFunc("/projects", ph.ListAll)
+	getProjList.Use(auth.Middleware)
+
+	postProj := sm.Methods(http.MethodPost).Subrouter()
+	postProj.HandleFunc("/projects", ph.CreateProject)
+	postProj.Use(auth.Middleware)
+	postProj.Use(ph.MiddlewareValidateProject)
+}
+
+func setArchViewEndpoints(sm *mux.Router, ah *archViewHandlers.ArchViews) {
+	getArchView := sm.Methods(http.MethodGet).Subrouter()
+	getArchView.HandleFunc("/projects/{projectID}/views/{id}", ah.GetArchView)
+	getArchView.Use(auth.Middleware)
+
+	postArchView := sm.Methods(http.MethodPost).Subrouter()
+	postArchView.HandleFunc("/projects/{projectID}/views", ah.CreateArchView)
+	postArchView.Use(auth.Middleware)
+	postArchView.Use(ah.MiddlewareValidateArchView)
+}
+
+func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchViewComponents) {
+	getComp := sm.Methods(http.MethodGet).Subrouter()
+	getComp.HandleFunc("/projects/{projectID}/views/{viewID}/components/{id}", ch.GetArchViewComponent)
+	getComp.Use(auth.Middleware)
+
+	postComponent := sm.Methods(http.MethodPost).Subrouter()
+	postComponent.HandleFunc("/projects/{projectID}/views/{viewID}/components", ch.AddArchViewComponent)
+	postComponent.Use(auth.Middleware)
+	postComponent.Use(ch.MiddlewareValidateArchViewComponent)
 }

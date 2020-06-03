@@ -35,7 +35,7 @@ func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
 	userID := data.GetUserIDFromContext(r.Context())
 
 	if userID == "" {
-		io.WriteString(rw, `{{"error": "401 not authenticated"}}`)
+		http.Error(rw, `[{"error": "not authenticated"}]`, http.StatusUnauthorized)
 		return
 	}
 

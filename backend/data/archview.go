@@ -2,14 +2,25 @@ package data
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
-	"log"
 	"time"
+
 	db "traceability/database"
 
 	guuid "github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+type ViewKind string
+
+const (
+	UserStory   ViewKind = "userStory"
+	Functional  ViewKind = "functional"
+	Development ViewKind = "development"
+	None        ViewKind = "none"
 )
 
 // ArchViewComponent is the component of a view
@@ -28,7 +39,7 @@ type ArchViewComponent struct {
 	// Kind, "userStory", "functional", "development"
 	//
 	// required: false
-	Kind string `json:"kind" validate:"oneof=userStory functional development"`
+	Kind ViewKind `json:"kind" validate:"oneof=userStory functional development"`
 
 	LinksList []string `json:"links,omitempty"`
 	// required: true
@@ -36,6 +47,11 @@ type ArchViewComponent struct {
 	// component belongs to view with id
 	// required: true
 	ViewID string `json:"viewID" validate:"required"`
+
+	// component belongs to view with id
+	// required: true
+	ProjectID string `json:"projectID" validate:"required"`
+
 	//FunctionList is used for development view to show functions of a component
 	FunctionList []string `json:"functions"`
 
@@ -45,13 +61,33 @@ type ArchViewComponent struct {
 	// Comments will be in here
 }
 
+// UnmarshalJSON parses from json
+func (ac *ArchViewComponent) UnmarshalJSON(data []byte) error {
+	// Define a secondary tycursive cape so that we don't end up with a rell to json.Unmarshal
+	type Aux ArchViewComponent
+	var a *Aux = (*Aux)(ac)
+	err := json.Unmarshal(data, &a)
+	if err != nil {
+		return err
+	}
+
+	// Validate the valid enum values
+	switch ac.Kind {
+	case UserStory, Functional, Development, None:
+		return nil
+	default:
+		ac.Kind = ""
+		return errors.New("invalid value for Key")
+	}
+}
+
 // ArchView general purpose architecture view
 // swagger:model
 type ArchView struct {
 	// the id for the project
 	//
 	// required: false
-	ID string `json:"id"`
+	ID string `json:"id,omitempty" bson:"omitempty"`
 
 	// the name of the project
 	//
@@ -74,23 +110,24 @@ type ArchView struct {
 	// required: false
 	Desctription string `json:"description"`
 
-	// Components of the view
+	// Component IDs of the view
 	//
 	// required: false
-	Components []ArchViewComponent `json:"components,omitempty"`
+	Components []string `json:"components,omitempty" bson:"omitempty"`
 }
 
-// AddView adds a new project to the database
-func AddView(v ArchView) {
+// AddArchView adds a new project to the database
+func AddArchView(v ArchView) error {
 	v.ID = guuid.New().String()
 
 	collection := db.DB.Collection(db.ArchViewCollectionName)
 	insertResult, err := collection.InsertOne(context.TODO(), v)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	return nil
 }
 
 // FindArchViewByID returns an ArchView or error
@@ -112,20 +149,32 @@ func FindArchViewByID(id string) (ArchView, error) {
 func AddArchViewComponent(c ArchViewComponent) {
 	c.ID = guuid.New().String()
 	archViewID := c.ViewID
-	collection := db.DB.Collection(db.ArchViewCollectionName)
+	archViewCollection := db.DB.Collection(db.ArchViewCollectionName)
+	componentCollection := db.DB.Collection(db.ArchViewComponentCollectionName)
+
 	query := bson.M{"id": archViewID}
+	update := bson.M{"$push": bson.M{"components": c.ID}}
 
-	bsonComponent, err := bson.Marshal(c)
-	update := bson.M{"$push": bson.M{"components": bsonComponent}}
-
-	updateResult, err := collection.UpdateOne(context.TODO(), query, update)
+	updateResult, err := archViewCollection.UpdateOne(context.TODO(), query, update)
+	insertResult, err := componentCollection.InsertOne(context.TODO(), c)
 
 	if err != nil {
 		panic(err)
 	}
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("Inserted a single document: ", updateResult.UpsertedID)
+	fmt.Println("Upserted a single document:", updateResult, "\n Inserted a single document: ", insertResult)
+}
+
+// FindArchViewComponentByID returns an ArchView or error
+func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent, error) {
+	exp := 5 * time.Second
+	ctx, cancel := context.WithTimeout(context.Background(), exp)
+	defer cancel()
+	collection := db.DB.Collection(db.ArchViewComponentCollectionName)
+
+	var resultComponent ArchViewComponent
+
+	filter := bson.D{primitive.E{Key: "id", Value: id}}
+	err := collection.FindOne(ctx, filter).Decode(&resultComponent)
+	return resultComponent, err
 }

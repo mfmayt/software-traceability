@@ -55,7 +55,7 @@ type User struct {
 	// projects of the insect as list
 	//
 	// required: false
-	ProjectIDs []string `json:"projectIDs,omitempty"`
+	ProjectIDs []string `json:"projectIDs,omitempty" bson:"omitempty"`
 }
 
 // GetAllUsers returns all users
