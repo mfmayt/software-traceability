@@ -155,32 +155,12 @@ func UserHasPermission(projectID string, userID string, permission string) bool 
 	return permission == memberRole
 }
 
-// UpdateViewID
-// func UpdateViewID(projectID string, viewID string, viewKind ViewKind) {
-// 	collection := db.DB.Collection(db.ProjectCollectionName)
-// 	// filter with internal id
-// 	filter := bson.M{"id": projectID}
+// UpdateProject replaces archview with new
+func UpdateProject(p Project) error {
+	projectCollection := db.DB.Collection(db.ProjectCollectionName)
+	query := bson.M{"id": p.ID}
 
-// 	// Create the update
-// 	update := bson.M{
-// 		"$set": bson.M{"accesstoken": user.AccessToken},
-// 	}
-
-// 	// Create an instance of an options and set the desired options
-// 	upsert := true
-// 	after := options.After
-// 	opt := options.FindOneAndUpdateOptions{
-// 		ReturnDocument: &after,
-// 		Upsert:         &upsert,
-// 	}
-
-// 	// Find one result and update it
-// 	result := collection.FindOneAndUpdate(ctx, filter, update, &opt)
-// 	if result.Err() != nil {
-// 		return nil, result.Err()
-// 	}
-// 	// Decode the result
-// 	doc := bson.M{}
-// 	decodeErr := result.Decode(&doc)
-// 	return doc, decodeErr
-// }
+	replaceResult, err := projectCollection.ReplaceOne(context.TODO(), query, p)
+	fmt.Println("Replaced a single document:", replaceResult)
+	return err
+}

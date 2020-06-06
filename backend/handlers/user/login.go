@@ -65,6 +65,6 @@ func (p *Users) LoginUser(rw http.ResponseWriter, r *http.Request) {
 		Expires: expirationTime,
 	})
 	data.FindUserAndUpdateAccessToken(resultUser)
-	io.WriteString(rw, `{}`)
+	err = data.ToJSON(resultUser, rw)
 	return
 }

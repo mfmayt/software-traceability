@@ -33,18 +33,9 @@ func (p *Projects) GetProject(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
-	id, ok := vars["id"]
+	id, ok := vars["projectID"]
 	if !ok {
 		io.WriteString(rw, `{{"error": "id not found"}}`)
-		return
-	}
-
-	userID := data.GetUserIDFromContext(r.Context())
-	isMember := data.UserHasPermission(id, userID, "member")
-	isOwner := data.UserHasPermission(id, userID, "owner")
-	p.l.Println(isOwner)
-	if userID == "" || (!isOwner && !isMember) {
-		io.WriteString(rw, `{{"error": "401 user not authenticated"}}`)
 		return
 	}
 

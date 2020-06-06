@@ -12,12 +12,12 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// UpdateArchView handles PATCH requests and updates archview
-func (aw *ArchViews) UpdateArchView(rw http.ResponseWriter, r *http.Request) {
+// UpdateProject handles PATCH requests and updates project
+func (p *Projects) UpdateProject(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
-	id, ok := vars["id"]
+	id, ok := vars["projectID"]
 	jsonBody, err := ioutil.ReadAll(r.Body)
 
 	if !ok {
@@ -25,20 +25,20 @@ func (aw *ArchViews) UpdateArchView(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archView, err := data.FindArchViewByID(id)
+	project, err := data.FindProjectByID(id)
 
 	if err != nil {
 		http.Error(rw, `{{"error": "architecture view not found"}}`, http.StatusNotFound)
 		return
 	}
-	jsonArch, err := json.Marshal(archView)
+	jsonProj, err := json.Marshal(project)
 	if err != nil {
 		http.Error(rw, `{{"error": "architecture view not found"}}`, http.StatusInternalServerError)
 		return
 	}
-	modifiedJSON, err := jsonpatch.MergePatch(jsonArch,jsonBody)
-	modifiedArchView := &data.ArchView{} 
-	err = json.Unmarshal(modifiedJSON, modifiedArchView)
-	data.UpdateArchView(*modifiedArchView)
-	err = data.ToJSON(modifiedArchView, rw)
+	modifiedJSON, err := jsonpatch.MergePatch(jsonProj, jsonBody)
+	modifiedProj := &data.Project{}
+	err = json.Unmarshal(modifiedJSON, modifiedProj)
+	data.UpdateProject(*modifiedProj)
+	err = data.ToJSON(modifiedProj, rw)
 }

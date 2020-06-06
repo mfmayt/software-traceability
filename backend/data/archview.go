@@ -120,7 +120,7 @@ type ArchView struct {
 	// UserKinds is a list of user story actors that are added
 	//
 	// required: false
-	UserKinds []string `json:"userKinds,omitempty" bson:"omitempty"`
+	UserKinds []string `json:"userKinds,omitempty" bson:"userkinds,omitempty"`
 }
 
 // AddArchView adds a new project to the database
@@ -171,13 +171,22 @@ func AddArchViewComponent(c ArchViewComponent) {
 	fmt.Println("Upserted a single document:", updateResult, "\n Inserted a single document: ", insertResult)
 }
 
-// UpdateArchView replaces archview with new
+// UpdateArchView replaces archview with new one
 func UpdateArchView(a ArchView) error {
 	archViewCollection := db.DB.Collection(db.ArchViewCollectionName)
 	query := bson.M{"id": a.ID}
-	// replace := bson.M{"$push": bson.M{"components": c.ID}}
 
 	replaceResult, err := archViewCollection.ReplaceOne(context.TODO(), query, a)
+	fmt.Println("Replaced a single document:", replaceResult)
+	return err
+}
+
+// UpdateArchViewComponent replaces component with new one
+func UpdateArchViewComponent(ac ArchViewComponent) error {
+	archViewComponentCollection := db.DB.Collection(db.ArchViewComponentCollectionName)
+	query := bson.M{"id": ac.ID}
+
+	replaceResult, err := archViewComponentCollection.ReplaceOne(context.TODO(), query, ac)
 	fmt.Println("Replaced a single document:", replaceResult)
 	return err
 }

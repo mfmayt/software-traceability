@@ -28,17 +28,8 @@ func (aw *ArchViews) CreateArchView(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := data.GetUserIDFromContext(r.Context())
-	isOwmer := data.UserHasPermission(projectID, userID, "owner")
-	// TODO: architect can add, in this case owner is architect
-	if userID == "" || !isOwmer {
-		io.WriteString(rw, `{{"error": "401 user not authenticated"}}`)
-		return
-	}
-
 	archView.ProjectID = projectID
 	err := data.AddArchView(*archView)
-
 	if err != nil {
 		io.WriteString(rw, `{{"error": "architecture view couldn't be added"}}`)
 	}

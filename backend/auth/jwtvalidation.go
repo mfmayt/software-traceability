@@ -1,11 +1,15 @@
 package auth
 
 import (
+	"io"
 	"log"
 	"net/http"
 
+	data "traceability/data"
+
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -28,4 +32,28 @@ func Middleware(next http.Handler) http.Handler {
 	})
 
 	return jwtMiddleware.Handler(next)
+}
+
+// ProjectAuthMiddleware authenticate user to project
+func ProjectAuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		rw.Header().Add("Content-Type", "application/json")
+		vars := mux.Vars(r)
+		projectID, ok := vars["projectID"]
+
+		if !ok {
+			io.WriteString(rw, `{{"error": "id not found"}}`)
+			return
+		}
+
+		userID := data.GetUserIDFromContext(r.Context())
+		isMember := data.UserHasPermission(projectID, userID, "member")
+		isOwner := data.UserHasPermission(projectID, userID, "owner")
+
+		if userID == "" || (!isOwner && !isMember) {
+			http.Error(rw, `{{"error": "401 user not authenticated"}}`, http.StatusUnauthorized)
+			return
+		}
+		next.ServeHTTP(rw, r)
+	})
 }

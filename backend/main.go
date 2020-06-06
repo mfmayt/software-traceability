@@ -122,9 +122,9 @@ func setUserEndpoints(sm *mux.Router, uh *userHandlers.Users) {
 
 func setProjectEndpoints(sm *mux.Router, ph *projectHandlers.Projects) {
 	getProj := sm.Methods(http.MethodGet).Subrouter()
-	getProj.HandleFunc("/projects/{id}", ph.GetProject)
+	getProj.HandleFunc("/projects/{projectID}", ph.GetProject)
 	getProj.Use(auth.Middleware)
-	getProj.Use(ph.MiddlewareValidatePermission)
+	getProj.Use(auth.ProjectAuthMiddleware)
 
 	getProjList := sm.Methods(http.MethodGet).Subrouter()
 	getProjList.HandleFunc("/projects", ph.ListAll)
@@ -134,30 +134,45 @@ func setProjectEndpoints(sm *mux.Router, ph *projectHandlers.Projects) {
 	postProj.HandleFunc("/projects", ph.CreateProject)
 	postProj.Use(auth.Middleware)
 	postProj.Use(ph.MiddlewareValidateProject)
+
+	patchProj := sm.Methods(http.MethodPatch).Subrouter()
+	patchProj.HandleFunc("/projects/{projectID}", ph.UpdateProject)
+	patchProj.Use(auth.Middleware)
+	patchProj.Use(auth.ProjectAuthMiddleware)
 }
 
 func setArchViewEndpoints(sm *mux.Router, ah *archViewHandlers.ArchViews) {
 	getArchView := sm.Methods(http.MethodGet).Subrouter()
 	getArchView.HandleFunc("/projects/{projectID}/views/{id}", ah.GetArchView)
 	getArchView.Use(auth.Middleware)
+	getArchView.Use(auth.ProjectAuthMiddleware)
 
 	postArchView := sm.Methods(http.MethodPost).Subrouter()
 	postArchView.HandleFunc("/projects/{projectID}/views", ah.CreateArchView)
 	postArchView.Use(auth.Middleware)
+	postArchView.Use(auth.ProjectAuthMiddleware)
 	postArchView.Use(ah.MiddlewareValidateArchView)
 
 	patchArchView := sm.Methods(http.MethodPatch).Subrouter()
 	patchArchView.HandleFunc("/projects/{projectID}/views/{id}", ah.UpdateArchView)
 	patchArchView.Use(auth.Middleware)
+	patchArchView.Use(auth.ProjectAuthMiddleware)
 }
 
 func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchViewComponents) {
 	getComp := sm.Methods(http.MethodGet).Subrouter()
 	getComp.HandleFunc("/projects/{projectID}/views/{viewID}/components/{id}", ch.GetArchViewComponent)
 	getComp.Use(auth.Middleware)
+	getComp.Use(auth.ProjectAuthMiddleware)
 
 	postComponent := sm.Methods(http.MethodPost).Subrouter()
 	postComponent.HandleFunc("/projects/{projectID}/views/{viewID}/components", ch.AddArchViewComponent)
 	postComponent.Use(auth.Middleware)
+	postComponent.Use(auth.ProjectAuthMiddleware)
 	postComponent.Use(ch.MiddlewareValidateArchViewComponent)
+
+	patchComponent := sm.Methods(http.MethodPatch).Subrouter()
+	patchComponent.HandleFunc("/projects/{projectID}/views/{viewID}/components/{id}", ch.UpdateArchViewComponent)
+	patchComponent.Use(auth.Middleware)
+	patchComponent.Use(auth.ProjectAuthMiddleware)
 }
