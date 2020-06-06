@@ -28,14 +28,14 @@ func (ac *ArchViewComponents) GetArchViewComponent(rw http.ResponseWriter, r *ht
 	isOwmer := data.UserHasPermission(projectID, userID, "owner")
 
 	if userID == "" || (!isOwmer && !isMember) {
-		http.Error(rw, `{{"error": "401 user not authenticated"}}`, http.StatusUnauthorized)
+		http.Error(rw, `{{"error": "user not authenticated"}}`, http.StatusUnauthorized)
 		return
 	}
 
 	archViewComponent, err := data.FindArchViewComponentByID(id, viewID)
 
 	if err != nil {
-		http.Error(rw, `{{"error": "401 user not authenticated"}}`, http.StatusInternalServerError)
+		http.Error(rw, `{{"error": "component not found"}}`, http.StatusInternalServerError)
 		return
 	}
 

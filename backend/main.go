@@ -145,6 +145,10 @@ func setArchViewEndpoints(sm *mux.Router, ah *archViewHandlers.ArchViews) {
 	postArchView.HandleFunc("/projects/{projectID}/views", ah.CreateArchView)
 	postArchView.Use(auth.Middleware)
 	postArchView.Use(ah.MiddlewareValidateArchView)
+
+	patchArchView := sm.Methods(http.MethodPatch).Subrouter()
+	patchArchView.HandleFunc("/projects/{projectID}/views/{id}", ah.UpdateArchView)
+	patchArchView.Use(auth.Middleware)
 }
 
 func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchViewComponents) {

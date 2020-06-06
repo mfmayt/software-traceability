@@ -41,9 +41,9 @@ func (p *Projects) GetProject(rw http.ResponseWriter, r *http.Request) {
 
 	userID := data.GetUserIDFromContext(r.Context())
 	isMember := data.UserHasPermission(id, userID, "member")
-	isOwmer := data.UserHasPermission(id, userID, "owner")
-
-	if userID == "" || (!isOwmer && !isMember) {
+	isOwner := data.UserHasPermission(id, userID, "owner")
+	p.l.Println(isOwner)
+	if userID == "" || (!isOwner && !isMember) {
 		io.WriteString(rw, `{{"error": "401 user not authenticated"}}`)
 		return
 	}

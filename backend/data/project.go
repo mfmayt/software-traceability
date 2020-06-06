@@ -66,7 +66,7 @@ type Project struct {
 	// Members of the project with roles
 	//
 	// required: false
-	Members []ProjectMember `json:"members,omitempty" bson:"omitempty"`
+	Members []ProjectMember `json:"members,omitempty"`
 }
 
 // GetAllProjects returns all projects

@@ -42,21 +42,23 @@ type ArchViewComponent struct {
 	Kind ViewKind `json:"kind" validate:"oneof=userStory functional development"`
 
 	LinksList []string `json:"links,omitempty"`
+	// Description
 	// required: true
 	Desctription string `json:"description" validate:"required"`
+
 	// component belongs to view with id
 	// required: true
 	ViewID string `json:"viewID" validate:"required"`
 
 	// component belongs to view with id
 	// required: true
-	ProjectID string `json:"projectID" validate:"required"`
+	ProjectID string `json:"projectID"`
 
 	//FunctionList is used for development view to show functions of a component
 	FunctionList []string `json:"functions"`
 
 	//VarList is used for development view to show variables of a component
-	VarList []string `json:"variables"`
+	VarList []string `json:"variables,omitempty" bson:"omitempty"`
 
 	// Comments will be in here
 }
@@ -87,7 +89,7 @@ type ArchView struct {
 	// the id for the project
 	//
 	// required: false
-	ID string `json:"id,omitempty" bson:"omitempty"`
+	ID string `json:"id,omitempty"`
 
 	// the name of the project
 	//
@@ -98,7 +100,7 @@ type ArchView struct {
 	// belonging project's id
 	//
 	// required: true
-	ProjectID string `json:"projectID"`
+	ProjectID string `json:"projectID" bson:"projectid,omitempty"`
 
 	// Kind, "userStory", "functional", "development"
 	//
@@ -113,7 +115,12 @@ type ArchView struct {
 	// Component IDs of the view
 	//
 	// required: false
-	Components []string `json:"components,omitempty" bson:"omitempty"`
+	Components []string `json:"components,omitempty"`
+
+	// UserKinds is a list of user story actors that are added
+	//
+	// required: false
+	UserKinds []string `json:"userKinds,omitempty" bson:"omitempty"`
 }
 
 // AddArchView adds a new project to the database
@@ -135,7 +142,6 @@ func FindArchViewByID(id string) (ArchView, error) {
 	exp := 5 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), exp)
 	defer cancel()
-
 	collection := db.DB.Collection(db.ArchViewCollectionName)
 
 	var resultArchView ArchView
@@ -165,6 +171,17 @@ func AddArchViewComponent(c ArchViewComponent) {
 	fmt.Println("Upserted a single document:", updateResult, "\n Inserted a single document: ", insertResult)
 }
 
+// UpdateArchView replaces archview with new
+func UpdateArchView(a ArchView) error {
+	archViewCollection := db.DB.Collection(db.ArchViewCollectionName)
+	query := bson.M{"id": a.ID}
+	// replace := bson.M{"$push": bson.M{"components": c.ID}}
+
+	replaceResult, err := archViewCollection.ReplaceOne(context.TODO(), query, a)
+	fmt.Println("Replaced a single document:", replaceResult)
+	return err
+}
+
 // FindArchViewComponentByID returns an ArchView or error
 func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent, error) {
 	exp := 5 * time.Second
@@ -175,6 +192,7 @@ func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent,
 	var resultComponent ArchViewComponent
 
 	filter := bson.D{primitive.E{Key: "id", Value: id}}
+	fmt.Println(id)
 	err := collection.FindOne(ctx, filter).Decode(&resultComponent)
 	return resultComponent, err
 }
