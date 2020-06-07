@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:frontend/routing/route_names.dart';
 import 'package:frontend/views/about/about_view.dart';
+import 'package:frontend/views/about/register_screen.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/login/login_screen.dart';
 import 'package:frontend/views/login/login_view.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings){
@@ -14,8 +16,13 @@ Route<dynamic> generateRoute(RouteSettings settings){
       return _getPageRoute(AboutView());
     case LoginRoute:
       return _getPageRoute(LoginView());
+    case LoginScreenRoute:
+      return _getPageRoute(LoginScreen());
+    case RegisterScreenRoute:
+      return _getPageRoute(RegisterScreen());
       
     default:
+      
   }
 }
 

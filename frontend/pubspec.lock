@@ -88,6 +88,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  provider:
+    dependency: "direct main"
+    description:
+      name: provider
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.2.0"
+  provider_architecture:
+    dependency: "direct main"
+    description:
+      name: provider_architecture
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.3"
   responsive_builder:
     dependency: "direct main"
     description:
