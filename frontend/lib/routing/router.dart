@@ -7,6 +7,7 @@ import 'package:frontend/views/about/register_screen.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_screen.dart';
 import 'package:frontend/views/login/login_view.dart';
+import 'package:frontend/views/main/main_screen.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings){
   switch (settings.name) {
@@ -20,7 +21,8 @@ Route<dynamic> generateRoute(RouteSettings settings){
       return _getPageRoute(LoginScreen());
     case RegisterScreenRoute:
       return _getPageRoute(RegisterScreen());
-      
+    case MainScreenRoute:
+      return _getPageRoute(MainScreen());
     default:
       
   }

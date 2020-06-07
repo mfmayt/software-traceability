@@ -28,14 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-            Text(
-              "Email",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 30,
-                fontWeight: FontWeight.normal, 
-              ),
-            ),
+            
             Container(
               width: 250,
               child: TextField(
@@ -52,14 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
               ),
             ),
-            Text(
-              "Password",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 30,
-                fontWeight: FontWeight.normal, 
-              ),
-            ),
+            
             Container(
               width: 250,
               child: TextField(
@@ -83,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   hoverColor: Colors.green[400],
                   textColor: Colors.white,
                   onPressed: (){
-                    Navigator.pushNamed(context,"/login_screen");
+                    Navigator.pushNamed(context,"/main_screen");
                     //locator<NavigationService>().navigateTo(LoginScreenRoute);
                   },
                   child: Text("Login",),
