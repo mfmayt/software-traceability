@@ -6,6 +6,19 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  var myIcon = Icon(Icons.visibility);
+  var visible = false;
+  toogleVisibility(){
+    
+    if(!visible){
+      visible = true;
+      myIcon = Icon(Icons.visibility);
+    }
+    else{
+      visible = false;
+      myIcon = Icon(Icons.visibility_off);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -72,6 +85,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   labelText: 'Password',
                   icon: Icon(Icons.lock),
                   hintText: '********',
+                  suffixIcon: IconButton(
+                    icon: myIcon, 
+                    onPressed: (){
+                      setState(() {
+                        
+                        
+                        if(visible){
+                        toogleVisibility();
+                        }else{
+                          toogleVisibility();
+                        }
+
+                      }); 
+                    } 
+                  ),
                   border: const OutlineInputBorder(),
                 ),
                 textAlign: TextAlign.center,

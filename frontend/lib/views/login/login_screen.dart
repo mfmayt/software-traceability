@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 class LoginScreen extends StatefulWidget {
   @override
@@ -5,6 +7,20 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  var myIcon = Icon(Icons.visibility);
+  var visible = false;
+  toogleVisibility(){
+    
+    if(!visible){
+      visible = true;
+      myIcon = Icon(Icons.visibility);
+    }
+    else{
+      visible = false;
+      myIcon = Icon(Icons.visibility_off);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -46,20 +62,42 @@ class _LoginScreenState extends State<LoginScreen> {
             Container(
               width: 250,
               child: TextField(
-                obscureText: true,
+              
+                obscureText: !visible,
+                
                 autocorrect: false,
                 obscuringCharacter: '*',
                 toolbarOptions: ToolbarOptions(paste: true,),
                 maxLength: 20,
+                
                 decoration: InputDecoration(
+                  
                   labelText: 'Password',
                   icon: Icon(Icons.lock),
                   hintText: '********',
-                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: myIcon, 
+                    onPressed: (){
+                      setState(() {
+                        
+                        
+                        if(visible){
+                        toogleVisibility();
+                        }else{
+                          toogleVisibility();
+                        }
+
+                      }); 
+                    } 
+                  ),
+                border: const OutlineInputBorder(),
                 ),
+                
                 textAlign: TextAlign.center,
               ),
+                    
             ),
+            
             RaisedButton(
               hoverElevation: 10.0,
                   color: Colors.green,
