@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/locator.dart';
-import 'package:frontend/services/navigation_service.dart';
-
 class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
