@@ -14,13 +14,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// ViewKind view of the kind
 type ViewKind string
 
 const (
-	UserStory   ViewKind = "userStory"
-	Functional  ViewKind = "functional"
+	// UserStory is a type
+	UserStory ViewKind = "userStory"
+	// Functional is a type
+	Functional ViewKind = "functional"
+	// Development is a type
 	Development ViewKind = "development"
-	None        ViewKind = "none"
+	// None if something stupid happened
+	None ViewKind = "none"
 )
 
 // ArchViewComponent is the component of a view
@@ -53,6 +58,8 @@ type ArchViewComponent struct {
 	// component belongs to view with id
 	// required: true
 	ProjectID string `json:"projectID"`
+
+	// TODO: add view id
 
 	//FunctionList is used for development view to show functions of a component
 	FunctionList []string `json:"functions"`
