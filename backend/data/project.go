@@ -99,7 +99,7 @@ func GetAllProjects() Projects {
 }
 
 // AddProject adds a new project to the database
-func AddProject(p Project, owner string) {
+func AddProject(p Project, owner string) Project {
 	var members []ProjectMember
 	members = append(members, ProjectMember{ID: owner, Role: "owner"})
 	p.Members = members
@@ -113,6 +113,7 @@ func AddProject(p Project, owner string) {
 		log.Fatal(err)
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
+	return p
 }
 
 // FindProjectByID returns user or error

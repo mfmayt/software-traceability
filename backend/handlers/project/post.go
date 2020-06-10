@@ -18,5 +18,6 @@ func (p *Projects) CreateProject(rw http.ResponseWriter, r *http.Request) {
 	project := r.Context().Value(KeyProject{}).(*data.Project)
 	ownerID := data.GetUserIDFromContext(r.Context())
 	p.l.Printf("[DEBUG] Inserting user: %#v, from owner with id: %#v\n", project, ownerID)
-	data.AddProject(*project, ownerID)
+	addedProject := data.AddProject(*project, ownerID)
+	data.ToJSON(addedProject, rw)
 }
