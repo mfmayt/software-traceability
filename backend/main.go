@@ -15,6 +15,7 @@ import (
 	archViewHandlers "traceability/handlers/archview"
 
 	componentHandlers "traceability/handlers/archviewcomponents"
+	linkHandlers "traceability/handlers/link"
 	projectHandlers "traceability/handlers/project"
 	userHandlers "traceability/handlers/user"
 
@@ -41,10 +42,13 @@ func main() {
 	ph := projectHandlers.NewProjects(l, v)
 	ah := archViewHandlers.NewArchViews(l, v)
 	ch := componentHandlers.NewArchViewComponents(l, v)
+	lh := linkHandlers.NewLinks(l, v)
+
 	setUserEndpoints(sm, uh)
 	setProjectEndpoints(sm, ph)
 	setArchViewEndpoints(sm, ah)
 	setArchViewComponentEndpoints(sm, ch)
+	setLinksEndpoints(sm, lh)
 
 	s := http.Server{
 		Addr:         address,           // configure the bind address
@@ -175,4 +179,26 @@ func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchVie
 	patchComponent.HandleFunc("/projects/{projectID}/views/{viewID}/components/{id}", ch.UpdateArchViewComponent)
 	patchComponent.Use(auth.Middleware)
 	patchComponent.Use(auth.ProjectAuthMiddleware)
+}
+
+func setLinksEndpoints(sm *mux.Router, lh *linkHandlers.Links) {
+	getLinkByID := sm.Methods(http.MethodGet).Subrouter()
+	getLinkByID.HandleFunc("/projects/{projectID}/links/{linkID}", lh.GetLink)
+	getLinkByID.Use(auth.Middleware)
+	getLinkByID.Use(auth.ProjectAuthMiddleware)
+
+	getAllLinks := sm.Methods(http.MethodGet).Subrouter()
+	getAllLinks.HandleFunc("/links", lh.ListAll)
+	getAllLinks.Use(auth.Middleware)
+
+	getLinksOfProject := sm.Methods(http.MethodGet).Subrouter()
+	getLinksOfProject.HandleFunc("/projects/{projectID}/links", lh.GetProjectLinks)
+	getLinksOfProject.Use(auth.Middleware)
+	getLinksOfProject.Use(auth.ProjectAuthMiddleware)
+
+	postLink := sm.Methods(http.MethodPost).Subrouter()
+	postLink.HandleFunc("/projects/{projectID}/links", lh.AddLink)
+	postLink.Use(auth.Middleware)
+	postLink.Use(auth.ProjectAuthMiddleware)
+	postLink.Use(lh.MiddlewareValidateLink)
 }

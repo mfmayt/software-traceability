@@ -15,14 +15,13 @@ func (ac *ArchViewComponents) GetArchViewComponent(rw http.ResponseWriter, r *ht
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
-	viewID, ok := vars["viewID"]
 
 	if !ok {
 		io.WriteString(rw, `{{"error": "id not found"}}`)
 		return
 	}
 
-	archViewComponent, err := data.FindArchViewComponentByID(id, viewID)
+	archViewComponent, err := data.FindArchViewComponentByID(id)
 
 	if err != nil {
 		http.Error(rw, `{{"error": "component not found"}}`, http.StatusInternalServerError)

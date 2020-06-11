@@ -199,7 +199,7 @@ func UpdateArchViewComponent(ac ArchViewComponent) error {
 }
 
 // FindArchViewComponentByID returns an ArchView or error
-func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent, error) {
+func FindArchViewComponentByID(id string) (ArchViewComponent, error) {
 	exp := 5 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), exp)
 	defer cancel()
