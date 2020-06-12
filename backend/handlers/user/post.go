@@ -17,5 +17,7 @@ import (
 func (u *Users) CreateUser(rw http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(KeyUser{}).(*data.User)
 	u.l.Printf("[DEBUG] Inserting user: %#v\n", user)
-	data.AddUser(*user)
+	resultUser := data.AddUser(*user)
+
+	data.ToJSON(*resultUser, rw)
 }

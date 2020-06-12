@@ -26,6 +26,8 @@ import (
 func (p *Users) LoginUser(rw http.ResponseWriter, r *http.Request) {
 	auth := r.Context().Value(KeyAuth{}).(*data.Auth)
 	p.l.Printf("[DEBUG] Login user: %#v\n", auth.Email)
+	// rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	filter := bson.D{primitive.E{Key: "email", Value: auth.Email}}
 	collection := db.DB.Collection(db.UserCollectionName)

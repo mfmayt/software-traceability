@@ -15,6 +15,7 @@ import (
 // UpdateProject handles PATCH requests and updates project
 func (p *Projects) UpdateProject(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 	id, ok := vars["projectID"]
@@ -46,6 +47,7 @@ func (p *Projects) UpdateProject(rw http.ResponseWriter, r *http.Request) {
 // AddMember handles PATCH requests and add a member to the project
 func (p *Projects) AddMember(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 	id, ok := vars["projectID"]

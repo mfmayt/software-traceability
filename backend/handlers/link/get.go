@@ -18,6 +18,7 @@ import (
 func (l *Links) ListAll(rw http.ResponseWriter, r *http.Request) {
 	l.l.Println("[DEBUG] get all links")
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	links := data.FindAllLinks()
 
@@ -35,6 +36,7 @@ func (l *Links) ListAll(rw http.ResponseWriter, r *http.Request) {
 // GetLink handles GET requests and returns all links
 func (l *Links) GetLink(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 	id, ok := vars["linkID"]
@@ -63,6 +65,7 @@ func (l *Links) GetLink(rw http.ResponseWriter, r *http.Request) {
 // GetProjectLinks handles GET requests and returns all links
 func (l *Links) GetProjectLinks(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 	projectID, ok := vars["projectID"]

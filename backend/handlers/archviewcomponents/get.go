@@ -12,6 +12,7 @@ import (
 // GetArchViewComponent handles GET requests and returns the archview by ID
 func (ac *ArchViewComponents) GetArchViewComponent(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]

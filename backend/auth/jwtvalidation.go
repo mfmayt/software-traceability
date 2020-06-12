@@ -38,6 +38,8 @@ func Middleware(next http.Handler) http.Handler {
 func ProjectAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		rw.Header().Add("Content-Type", "application/json")
+		rw.Header().Set("Access-Control-Allow-Origin", "*")
+
 		vars := mux.Vars(r)
 		projectID, ok := vars["projectID"]
 
