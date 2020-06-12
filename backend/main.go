@@ -131,7 +131,7 @@ func setProjectEndpoints(sm *mux.Router, ph *projectHandlers.Projects) {
 	getProj.Use(auth.ProjectAuthMiddleware)
 
 	getProjList := sm.Methods(http.MethodGet).Subrouter()
-	getProjList.HandleFunc("/projects", ph.ListAll)
+	getProjList.HandleFunc("/users/{userID}/projects", ph.ListAll)
 	getProjList.Use(auth.Middleware)
 
 	postProj := sm.Methods(http.MethodPost).Subrouter()
@@ -150,6 +150,11 @@ func setArchViewEndpoints(sm *mux.Router, ah *archViewHandlers.ArchViews) {
 	getArchView.HandleFunc("/projects/{projectID}/views/{id}", ah.GetArchView)
 	getArchView.Use(auth.Middleware)
 	getArchView.Use(auth.ProjectAuthMiddleware)
+
+	listArchView := sm.Methods(http.MethodGet).Subrouter()
+	listArchView.HandleFunc("/projects/{projectID}/views", ah.ListArchViews)
+	listArchView.Use(auth.Middleware)
+	listArchView.Use(auth.ProjectAuthMiddleware)
 
 	postArchView := sm.Methods(http.MethodPost).Subrouter()
 	postArchView.HandleFunc("/projects/{projectID}/views", ah.CreateArchView)

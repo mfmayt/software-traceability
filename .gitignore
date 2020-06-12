@@ -70,3 +70,4 @@ debug
 __debug_bin
 
 *.pprof
+pubspec.lock

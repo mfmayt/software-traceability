@@ -43,6 +43,11 @@ type Project struct {
 	// max length: 30
 	Name string `json:"name" validate:"required"`
 
+	// description
+	//
+	// required: false
+	Description string `json:"description,omitempty" bson:"description,omitempty"`
+
 	// id of the owner
 	//
 	// required: true
@@ -67,6 +72,24 @@ type Project struct {
 	//
 	// required: false
 	Members []ProjectMember `json:"members,omitempty"`
+}
+
+// GetAllUserProjects returns all projects
+func GetAllUserProjects(userID string) Projects {
+
+	var result Projects
+	allProjects := GetAllProjects()
+
+	for i, p := range allProjects {
+		fmt.Println(i, p)
+		for _, m := range p.Members {
+			if m.ID == userID {
+				result = append(result, p)
+			}
+		}
+	}
+
+	return result
 }
 
 // GetAllProjects returns all projects
@@ -105,6 +128,17 @@ func AddProject(p Project, owner string) Project {
 	p.Members = members
 	p.ID = guuid.New().String()
 	p.Owner = owner
+
+	userStory := &ArchView{Name: "User Stories", Kind: "userStory", ProjectID: p.ID}
+	functional := &ArchView{Name: "Functional", Kind: "functional", ProjectID: p.ID}
+	development := &ArchView{Name: "Development", Kind: "development", ProjectID: p.ID}
+
+	addedArchview, err := AddArchView(*userStory)
+	p.UserStoriesID = addedArchview.ID
+	addedArchview, err = AddArchView(*functional)
+	p.FuntionalViewID = addedArchview.ID
+	addedArchview, err = AddArchView(*development)
+	p.DevelopmentViewID = addedArchview.ID
 
 	collection := db.DB.Collection(db.ProjectCollectionName)
 	insertResult, err := collection.InsertOne(context.TODO(), p)

@@ -20,7 +20,14 @@ func (p *Projects) ListAll(rw http.ResponseWriter, r *http.Request) {
 	rw.Header().Add("Content-Type", "application/json")
 	rw.Header().Set("Access-Control-Allow-Origin", "*")
 
-	projects := data.GetAllProjects()
+	vars := mux.Vars(r)
+	userID, ok := vars["userID"]
+
+	if !ok {
+		io.WriteString(rw, `{{"error": "id not found"}}`)
+		return
+	}
+	projects := data.GetAllUserProjects(userID)
 
 	err := data.ToJSON(projects, rw)
 	if err != nil {

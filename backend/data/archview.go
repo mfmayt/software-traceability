@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	db "traceability/database"
@@ -122,7 +123,7 @@ type ArchView struct {
 	// Component IDs of the view
 	//
 	// required: false
-	Components []string `json:"components,omitempty"`
+	Components []string `json:"components,omitempty" bson:"components,omitmempty"`
 
 	// UserKinds is a list of user story actors that are added
 	//
@@ -131,17 +132,48 @@ type ArchView struct {
 }
 
 // AddArchView adds a new project to the database
-func AddArchView(v ArchView) error {
+func AddArchView(v ArchView) (*ArchView, error) {
 	v.ID = guuid.New().String()
 
 	collection := db.DB.Collection(db.ArchViewCollectionName)
+
 	insertResult, err := collection.InsertOne(context.TODO(), v)
 
 	if err != nil {
-		return err
+		return &v, err
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	return nil
+	return &v, nil
+}
+
+// FindArchViewsOfProject returns list of archviews to the belonging project
+func FindArchViewsOfProject(projectID string) ([]*ArchView, error) {
+	collection := db.DB.Collection(db.ArchViewCollectionName)
+	filter := bson.D{primitive.E{Key: "projectid", Value: projectID}}
+	cur, err := collection.Find(context.TODO(), filter)
+
+	defer cur.Close(context.TODO())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var result []*ArchView
+
+	for cur.Next(context.TODO()) {
+		var elem ArchView
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, &elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 // FindArchViewByID returns an ArchView or error
