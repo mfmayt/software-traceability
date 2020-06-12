@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/views/main/main_screen.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<User> userRegister(name,email,password) async {
   final http.Response response = await http.post(
-    'https://16bb3360211c.ngrok.io/users',
+    baseUrl + '/users',
     body: jsonEncode(<String, String>{
       'email':email,
       'password': password,
@@ -37,7 +38,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   } else {
     throw Exception('Failed to login');
   }
-}
+  }
 
   toogleVisibility(){
     if(!visible){
@@ -62,11 +63,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
               alignment: MainAxisAlignment.start,
               children: <Widget>[ 
                 IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: (){
-                  Navigator.pop(context);
-                  //locator<NavigationService>().goBack();
-                },
+                  icon: Icon(Icons.arrow_back),
+                  onPressed: (){
+                    Navigator.pop(context);
+                    //locator<NavigationService>().goBack();
+                  },
                 ),
               ],
             ),
@@ -110,7 +111,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: 250,
               child: TextField(
                 controller: myPasswordController,
-                obscureText: true,
+                obscureText: !visible,
                 autocorrect: false,
                 obscuringCharacter: '*',
                 toolbarOptions: ToolbarOptions(paste: true,),

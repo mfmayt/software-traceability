@@ -48,7 +48,7 @@ class _FadeRoute extends PageRouteBuilder {
       Animation<double> animation,
       Animation<double> secondaryAnimation,
       Widget child,
-    ) => FadeTransition(opacity: animation,child: child,)
+    ) => FadeTransition(opacity: animation, child: child,)
   
   );
 }

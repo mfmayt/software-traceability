@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<User> userLogin(email,password) async {
   final http.Response response = await http.post(
-    'https://16bb3360211c.ngrok.io/login',
+    baseUrl + '/login',
     body: jsonEncode(<String, String>{
       'email':email,
       'password': password,
@@ -142,30 +143,22 @@ class _LoginScreenState extends State<LoginScreen> {
             
             RaisedButton(
               hoverElevation: 10.0,
-                  color: Colors.green,
-                  hoverColor: Colors.green[400],
-                  textColor: Colors.white,
-                  onPressed: (){
-                    
-                    password = myPasswordController.text;
-                    email = myEmailController.text;
-                    //print(email);
-                    //print (password);
-                    
-                    _futureUser = userLogin(email,password);
-                    print("ANAN");
-                    print(_futureUser);
-                    
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => MainScreen(),
-                        settings: RouteSettings(arguments: _futureUser)
-
-                      ),
-                    );
-                  },
-                  child: Text("Login",),
+              color: Colors.green,
+              hoverColor: Colors.green[400],
+              textColor: Colors.white,
+              onPressed: (){
+                password = myPasswordController.text;
+                email = myEmailController.text;
+                _futureUser = userLogin(email,password);                    
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(),
+                    settings: RouteSettings(arguments: _futureUser)
+                  ),
+                );
+              },
+              child: Text("Login",),
             )
           ],
         ),
