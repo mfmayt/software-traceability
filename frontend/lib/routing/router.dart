@@ -21,8 +21,9 @@ Route<dynamic> generateRoute(RouteSettings settings){
       return _getPageRoute(LoginScreen());
     case RegisterScreenRoute:
       return _getPageRoute(RegisterScreen());
-    case MainScreenRoute:
-      return _getPageRoute(MainScreen());
+    
+    //case MainScreenRoute:
+    //  return _getPageRoute(MainScreen());
     default:
       
   }
