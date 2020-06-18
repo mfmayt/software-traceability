@@ -41,7 +41,7 @@ class _LoginViewState extends State<LoginView> {
                   textColor: Colors.white,
                   onPressed: (){
                     changeColor(Colors.blue);
-                    Navigator.pushNamed(context,"/login_screen");
+                    Navigator.pushNamed(context,"/user_story");
                     //locator<NavigationService>().navigateTo(LoginScreenRoute);
                   },
                   child: Text("Login",),
