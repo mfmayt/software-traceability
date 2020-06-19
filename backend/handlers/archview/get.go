@@ -11,7 +11,6 @@ import (
 
 // GetArchView handles GET requests and returns the archview by ID
 func (aw *ArchViews) GetArchView(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]

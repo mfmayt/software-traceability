@@ -17,7 +17,6 @@ import (
 // ListAll handles GET requests and returns all current users
 func (u *Users) ListAll(rw http.ResponseWriter, r *http.Request) {
 	u.l.Println("[DEBUG] get all records")
-	rw.Header().Add("Content-Type", "application/json")
 
 	users := data.GetAllUsers()
 
@@ -30,7 +29,6 @@ func (u *Users) ListAll(rw http.ResponseWriter, r *http.Request) {
 
 // GetUser handles GET requests and returns the user with ID
 func (u *Users) GetUser(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	userID := data.GetUserIDFromContext(r.Context())
 

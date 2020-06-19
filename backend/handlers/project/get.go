@@ -17,7 +17,6 @@ import (
 // ListAll handles GET requests and returns all current projects
 func (p *Projects) ListAll(rw http.ResponseWriter, r *http.Request) {
 	p.l.Println("[DEBUG] get all records")
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	userID, ok := vars["userID"]
@@ -37,7 +36,6 @@ func (p *Projects) ListAll(rw http.ResponseWriter, r *http.Request) {
 
 // GetProject handles GET requests and returns the project by ID
 func (p *Projects) GetProject(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["projectID"]

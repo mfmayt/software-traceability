@@ -14,7 +14,6 @@ import (
 
 // UpdateArchView handles PATCH requests and updates archview
 func (aw *ArchViews) UpdateArchView(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
@@ -36,8 +35,8 @@ func (aw *ArchViews) UpdateArchView(rw http.ResponseWriter, r *http.Request) {
 		http.Error(rw, `{{"error": "architecture view not found"}}`, http.StatusInternalServerError)
 		return
 	}
-	modifiedJSON, err := jsonpatch.MergePatch(jsonArch,jsonBody)
-	modifiedArchView := &data.ArchView{} 
+	modifiedJSON, err := jsonpatch.MergePatch(jsonArch, jsonBody)
+	modifiedArchView := &data.ArchView{}
 	err = json.Unmarshal(modifiedJSON, modifiedArchView)
 	data.UpdateArchView(*modifiedArchView)
 	err = data.ToJSON(modifiedArchView, rw)

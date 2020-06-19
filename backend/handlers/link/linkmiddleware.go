@@ -9,7 +9,6 @@ import (
 // MiddlewareValidateLink validates the link in the request and calls next if ok
 func (l *Links) MiddlewareValidateLink(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
 
 		link := &data.Link{}
 

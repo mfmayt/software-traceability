@@ -47,8 +47,6 @@ func (p *Users) MiddlewareValidateUser(next http.Handler) http.Handler {
 // MiddlewareValidateAuth validates the user in the request and calls next if ok
 func (p *Users) MiddlewareValidateAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
-		// rw.Header().Set("Access-Control-Allow-Origin", "*")
 		auth := &data.Auth{}
 
 		err := data.FromJSON(auth, r.Body)

@@ -9,7 +9,6 @@ import (
 // MiddlewareValidateProject validates the project in the request and calls next if ok
 func (p *Projects) MiddlewareValidateProject(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
 
 		project := &data.Project{}
 

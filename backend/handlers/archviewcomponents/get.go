@@ -11,7 +11,6 @@ import (
 
 // GetArchViewComponent handles GET requests and returns the archview by ID
 func (ac *ArchViewComponents) GetArchViewComponent(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
@@ -33,7 +32,6 @@ func (ac *ArchViewComponents) GetArchViewComponent(rw http.ResponseWriter, r *ht
 
 // ListArchViewComponents handles GET requests and returns the archview by ID
 func (ac *ArchViewComponents) ListArchViewComponents(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	viewID, ok := vars["viewID"]

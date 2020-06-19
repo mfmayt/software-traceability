@@ -14,7 +14,6 @@ import (
 
 // UpdateArchViewComponent handles PATCH requests and updates archview component
 func (ac *ArchViewComponents) UpdateArchViewComponent(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
