@@ -22,22 +22,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<User> _futureUser;
 
   final myNavigator = new Navigator();
-
+  
   Future<User> userRegister(name,email,password) async {
-  final http.Response response = await http.post(
-    baseUrl + '/users',
-    body: jsonEncode(<String, String>{
-      'email':email,
-      'password': password,
-      'name': name,
-    }),
-  );
+    final http.Response response = await http.post(
+      baseUrl + '/users',
+      body: jsonEncode(<String, String>{
+        'email':email,
+        'password': password,
+        'name': name,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    return User.fromJson(json.decode(response.body));
-  } else {
-    throw Exception('Failed to login');
-  }
+    if (response.statusCode == 200) {
+      return User.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to login');
+    }
   }
 
   toogleVisibility(){

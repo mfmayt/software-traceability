@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/navigation_bar/navbar_logo.dart';
+import 'package:frontend/widgets/navigation_drawer/navigation_drawer.dart';
 
 class NavigationBarMobile extends StatelessWidget {
   const NavigationBarMobile({Key key}) : super(key: key);
@@ -12,9 +13,11 @@ class NavigationBarMobile extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          IconButton(icon: Icon(Icons.menu),
-          onPressed: (){},
-          ),
+          //IconButton(icon: Icon(Icons.menu),
+          //onPressed: (){
+          //  NavigationDrawer();
+          //},
+          //),
           NavBarLogo()
         ],
       ),

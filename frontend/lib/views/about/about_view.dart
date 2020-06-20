@@ -8,7 +8,7 @@ class AboutView extends StatelessWidget {
     return Container(
       color: Colors.green,
           child: Center(
-        child: Text('About'),
+        child: Text('Software traceability is really important'),
       ),
     );
   }
