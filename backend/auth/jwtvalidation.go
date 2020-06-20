@@ -66,7 +66,7 @@ func CORS(h http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", origin)
 		w.Header().Add("Content-Type", "application/json")
 		if r.Method == "OPTIONS" {
-			w.Header().Set("Access-Control-Allow-Methods", "GET,POST")
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PATCH")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token, Authorization")
 		} else {
 			h.ServeHTTP(w, r)

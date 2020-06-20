@@ -23,6 +23,7 @@ class _UserStoriesState extends State<UserStories> {
   String projectID;
   String viewID;
   String newUserStory;
+  String newUserKind;
 
   void fetchArchViewComponents(http.Client client) async {
     userStories = await api.APIManager.getArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");
@@ -32,10 +33,10 @@ class _UserStoriesState extends State<UserStories> {
 
   void fetchArchView(http.Client client) async {
     archView = await api.APIManager.getArchView("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");
-    print(archView.userKinds);
     setState(() => {
-      this.choices = archView.userKinds,
-      this.dropdownValue = archView.userKinds[0],
+      choices = []..addAll(archView.userKinds),
+      choices.add("Add new user kind"),
+      dropdownValue = choices[0],
     });
   }
   
@@ -52,11 +53,18 @@ class _UserStoriesState extends State<UserStories> {
       description: this.newUserStory,
       userKind: this.dropdownValue,
       kind: "userStory",);
-    print("I AM HERE");
-    bool result = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
+
+    bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
     setState(() {
         this.fetchArchViewComponents(http.Client());
-        print(result);
+    });
+  }
+  _addNewUserKind() async{
+    this.archView.userKinds.add(newUserKind);
+
+    bool _ = await api.APIManager.patchArchView(this.archView, projectID, viewID);
+    setState(() {
+        this.fetchArchView(http.Client());
     });
   }
 
@@ -92,7 +100,32 @@ class _UserStoriesState extends State<UserStories> {
                 child: DropdownButton<String>(
                   hint: Align(alignment: Alignment.topLeft),
                   value: dropdownValue,
-                  onChanged: (String newValue) {
+                  onChanged: (String newValue) async{
+                    if (newValue == "Add new user kind"){
+                      await showDialog<void>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Type new user kind'),
+                            content: TextField(
+                              controller: _controller,
+                              onSubmitted: (String value) async {
+                                this.newUserKind = value;
+                              }
+                            ),
+                            actions: <Widget>[
+                              FlatButton(
+                                onPressed: () {
+                                  _addNewUserKind();
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        }
+                      );
+                    }
                     setState(() {
                       dropdownValue = newValue;
                     });
@@ -113,37 +146,20 @@ class _UserStoriesState extends State<UserStories> {
                     controller: _controller,
                     onSubmitted: (String value) async {
                       this.newUserStory = value;
-                      // await showDialog<void>(
-                      //   context: context,
-                      //   builder: (BuildContext context) {
-                      //     return AlertDialog(
-                      //       title: const Text('Thanks!'),
-                      //       content: Text('You typed "$value".'),
-                      //       actions: <Widget>[
-                      //         FlatButton(
-                      //           onPressed: () {
-                      //             Navigator.pop(context);
-                      //           },
-                      //           child: const Text('OK'),
-                      //         ),
-                      //       ],
-                      //     );
-                      //   }
-                      // );
                     }
                   ),
-                  ),
-                  Spacer(),
-                  Spacer(),
-                  Expanded(
-                    flex: 1,
-                    child: IconButton(
-                      onPressed: (){
-                        this._addUserStory();              
-                      },
-                      icon: Icon(Icons.add),
-                    ),
-                  ),
+              ),
+              Spacer(),
+              Spacer(),
+              Expanded(
+                flex: 1,
+                child: IconButton(
+                  onPressed: (){
+                    this._addUserStory();              
+                  },
+                  icon: Icon(Icons.add),
+                ),
+              ),
             ],
           ),
         ),

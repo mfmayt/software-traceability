@@ -14,7 +14,6 @@ import (
 
 // UpdateArchView handles PATCH requests and updates archview
 func (aw *ArchViews) UpdateArchView(rw http.ResponseWriter, r *http.Request) {
-
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	jsonBody, err := ioutil.ReadAll(r.Body)

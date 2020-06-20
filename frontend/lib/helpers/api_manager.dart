@@ -94,4 +94,23 @@ class APIManager{
     }
     return false;
   }
+
+  static Future<bool> patchArchView(ArchView av, String projectID, String viewID) async{
+    final String url = getRESTEndpoint(archViews, params: {'projectID': projectID, 'viewID': viewID});
+    final String body = jsonEncode(av);
+    print(body);
+    final response = await http.patch(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.contentTypeHeader: 'application/json'
+        },
+      body: body,
+    );
+
+    if (response.statusCode == 200){
+      return true;
+    }
+    return false;
+  }
 }
