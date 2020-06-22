@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
+import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/project_page/project_screen.dart';
 import 'package:frontend/widgets/centered_view/centered_view.dart';
 import 'package:frontend/widgets/navigation_bar/navigation_bar_projects_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
@@ -85,18 +87,20 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
   
-  final List<String> projects = ["Project"];
+  final List<String> projects = ["Software Tracker"];
   final List<String> projects2 = [];
 
   dynamic createProject(String projectName){
     setState(() {
-      if(projects.length<=4){
+      if(projects.length<=3){
         projects.insert(0, projectName);
       }else{
         projects2.insert(0, projectName);
       }    
     });
   }
+
+  
   var projectNameController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -134,9 +138,51 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         backgroundColor: primaryColor,
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.add), onPressed: null),
-          IconButton(icon: Icon(Icons.home), onPressed: null),
-          IconButton(icon: Icon(Icons.exit_to_app), onPressed: null)
+          IconButton(
+            icon: Icon(Icons.add), 
+            onPressed: () {
+              // Creates a pop up.
+              showDialog(
+                context: context,
+                builder: (_)=> AlertDialog(
+                    title: Text("Enter a name for your project"),
+                    content: TextField(
+                      maxLength: 30,
+                      controller: projectNameController,
+                    ),
+                    actions: [
+                      FlatButton(
+                        child: Text("Confirm"),
+                        onPressed: () {
+                          createProject(projectNameController.text);
+                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                        },
+                      ),
+                    ],
+                    elevation: 24.0,
+                    
+                ),
+                barrierDismissible: false,
+              );
+            },
+            ),
+          IconButton(
+            icon: Icon(Icons.home), 
+            onPressed: (){
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => HomeView(),
+                  //settings: RouteSettings(arguments: _futureUser)
+                ),
+              );
+            }
+          ),
+          IconButton(
+            icon: Icon(Icons.exit_to_app), 
+            onPressed: (){
+              Navigator.pop(context);
+            })
         ],
       ),
       body: Column(
@@ -176,6 +222,13 @@ class _MainScreenState extends State<MainScreen> {
                               alignment: Alignment.bottomRight,
                               icon: Icon(Icons.search),
                               onPressed: () {
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (context) => ProjectScreen(),
+                                    settings: RouteSettings(arguments: "${projects[index]}"),
+                                  ),
+                                );
                               },
                             )
                           ],
@@ -245,19 +298,38 @@ class _MainScreenState extends State<MainScreen> {
                 height: 200,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   itemCount: projects2.length,
-                  itemBuilder: (BuildContext context,int index){
+                  itemBuilder: (BuildContext context,int index2){
                     return Container(
-                      padding: EdgeInsets.fromLTRB(10,10,10,0),
+                      padding: EdgeInsets.fromLTRB(10,10,10,10),
                       height:220,
                       width:200,
                       child: Card(
+                        color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
                         elevation: 5,
-                        child: Text(
-                          '${projects2[index]}',
-                          style: TextStyle(fontSize:18),
-                        ),
+                        child: Column(
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Text(
+                                "${projects2[index2]}",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:20,
+                                  fontWeight: FontWeight.bold
+                                )
+                              ),
+                            ),
+                            IconButton(
+                              alignment: Alignment.bottomRight,
+                              icon: Icon(Icons.search),
+                              onPressed: () {
+                              },
+                            )
+                          ],
+                        )
                       ),
                     );
                   },
@@ -302,7 +374,6 @@ class _MainScreenState extends State<MainScreen> {
                                     ),
                                   ],
                                   elevation: 24.0,
-                                  
                               ),
                               barrierDismissible: false,
                             );
