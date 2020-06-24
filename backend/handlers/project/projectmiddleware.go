@@ -9,7 +9,6 @@ import (
 // MiddlewareValidateProject validates the project in the request and calls next if ok
 func (p *Projects) MiddlewareValidateProject(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
 
 		project := &data.Project{}
 
@@ -38,24 +37,6 @@ func (p *Projects) MiddlewareValidateProject(next http.Handler) http.Handler {
 		ctx := context.WithValue(r.Context(), KeyProject{}, project)
 		r = r.WithContext(ctx)
 
-		// Call the next handler, which can be another middleware in the chain, or the final handler.
-		next.ServeHTTP(rw, r)
-	})
-}
-
-// MiddlewareValidatePermission validates the user in the request and calls next if ok
-func (p *Projects) MiddlewareValidatePermission(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
-
-		// TODO: will be implemented\
-		// user := r.Context().Value("user")
-		// token, err := jwtmiddleware.FromAuthHeader(r)
-		// user, err := data.FindUserByAccessToken(token)
-		// data.FindMemberRoleInProject()
-		// for k, v := range user.(*jwt.Token).Claims.(jwt.MapClaims) {
-		// 	fmt.Fprintf(w, "%s :\t%#v\n", k, v)
-		//   }
 		// Call the next handler, which can be another middleware in the chain, or the final handler.
 		next.ServeHTTP(rw, r)
 	})

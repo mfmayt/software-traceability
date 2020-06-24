@@ -90,7 +90,7 @@ func GetAllUsers() Users {
 }
 
 // AddUser adds a new user to the database
-func AddUser(u User) {
+func AddUser(u User) *User {
 	u.ID = guuid.New().String()
 	u.Password = HashAndSalt([]byte(u.Password))
 	u.Role = "developer"
@@ -103,6 +103,8 @@ func AddUser(u User) {
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
 
 	userList = append(userList, &u)
+
+	return &u
 }
 
 // FindUserByID returns user or error

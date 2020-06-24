@@ -10,7 +10,6 @@ import (
 // MiddlewareValidateArchViewComponent validates the component in the request and calls next if ok
 func (ac *ArchViewComponents) MiddlewareValidateArchViewComponent(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
 
 		archViewComponent := &data.ArchViewComponent{}
 

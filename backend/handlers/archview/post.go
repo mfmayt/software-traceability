@@ -29,7 +29,7 @@ func (aw *ArchViews) CreateArchView(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	archView.ProjectID = projectID
-	err := data.AddArchView(*archView)
+	_, err := data.AddArchView(*archView)
 	if err != nil {
 		io.WriteString(rw, `{{"error": "architecture view couldn't be added"}}`)
 	}

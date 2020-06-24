@@ -9,7 +9,6 @@ import (
 // MiddlewareValidateArchView validates the project in the request and calls next if ok
 func (aw *ArchViews) MiddlewareValidateArchView(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
 
 		archView := &data.ArchView{}
 

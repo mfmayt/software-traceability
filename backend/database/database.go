@@ -14,6 +14,9 @@ const (
 
 	// ArchViewComponentCollectionName is the table name of the components
 	ArchViewComponentCollectionName = "components"
+
+	// LinkCollectionName is the table name of the links
+	LinkCollectionName = "links"
 )
 
 var (

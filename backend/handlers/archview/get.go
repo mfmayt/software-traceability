@@ -11,7 +11,6 @@ import (
 
 // GetArchView handles GET requests and returns the archview by ID
 func (aw *ArchViews) GetArchView(rw http.ResponseWriter, r *http.Request) {
-	rw.Header().Add("Content-Type", "application/json")
 
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
@@ -29,4 +28,25 @@ func (aw *ArchViews) GetArchView(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	err = data.ToJSON(archView, rw)
+}
+
+// ListArchViews handles GET requests and returns the list of archviews belongs to the project
+func (aw *ArchViews) ListArchViews(rw http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id, ok := vars["projectID"]
+	aw.l.Println(id)
+	if !ok {
+		io.WriteString(rw, `{{"error": "id not found"}}`)
+		return
+	}
+
+	archViews, err := data.FindArchViewsOfProject(id)
+
+	if err != nil {
+		io.WriteString(rw, `{{"error": "architecture view not found"}}`)
+		return
+	}
+	aw.l.Println("archviews completed")
+	err = data.ToJSON(archViews, rw)
 }

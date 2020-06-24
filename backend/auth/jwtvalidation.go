@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -37,10 +38,10 @@ func Middleware(next http.Handler) http.Handler {
 // ProjectAuthMiddleware authenticate user to project
 func ProjectAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
-		rw.Header().Add("Content-Type", "application/json")
+
 		vars := mux.Vars(r)
 		projectID, ok := vars["projectID"]
-
+		fmt.Println(r)
 		if !ok {
 			io.WriteString(rw, `{{"error": "id not found"}}`)
 			return
@@ -55,5 +56,20 @@ func ProjectAuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		next.ServeHTTP(rw, r)
+	})
+}
+
+// CORS Middleware
+func CORS(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Add("Content-Type", "application/json")
+		if r.Method == "OPTIONS" {
+			w.Header().Set("Access-Control-Allow-Methods", "GET,POST,PATCH")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, X-CSRF-Token, Authorization")
+		} else {
+			h.ServeHTTP(w, r)
+		}
 	})
 }

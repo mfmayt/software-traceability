@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	db "traceability/database"
@@ -14,13 +15,18 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// ViewKind view of the kind
 type ViewKind string
 
 const (
-	UserStory   ViewKind = "userStory"
-	Functional  ViewKind = "functional"
+	// UserStory is a type
+	UserStory ViewKind = "userStory"
+	// Functional is a type
+	Functional ViewKind = "functional"
+	// Development is a type
 	Development ViewKind = "development"
-	None        ViewKind = "none"
+	// None if something stupid happened
+	None ViewKind = "none"
 )
 
 // ArchViewComponent is the component of a view
@@ -53,6 +59,8 @@ type ArchViewComponent struct {
 	// component belongs to view with id
 	// required: true
 	ProjectID string `json:"projectID"`
+
+	// TODO: add view id
 
 	//FunctionList is used for development view to show functions of a component
 	FunctionList []string `json:"functions"`
@@ -115,7 +123,7 @@ type ArchView struct {
 	// Component IDs of the view
 	//
 	// required: false
-	Components []string `json:"components,omitempty"`
+	Components []string `json:"components,omitempty" bson:"components,omitmempty"`
 
 	// UserKinds is a list of user story actors that are added
 	//
@@ -124,17 +132,48 @@ type ArchView struct {
 }
 
 // AddArchView adds a new project to the database
-func AddArchView(v ArchView) error {
+func AddArchView(v ArchView) (*ArchView, error) {
 	v.ID = guuid.New().String()
 
 	collection := db.DB.Collection(db.ArchViewCollectionName)
+
 	insertResult, err := collection.InsertOne(context.TODO(), v)
 
 	if err != nil {
-		return err
+		return &v, err
 	}
 	fmt.Println("Inserted a single document: ", insertResult.InsertedID)
-	return nil
+	return &v, nil
+}
+
+// FindArchViewsOfProject returns list of archviews to the belonging project
+func FindArchViewsOfProject(projectID string) ([]*ArchView, error) {
+	collection := db.DB.Collection(db.ArchViewCollectionName)
+	filter := bson.D{primitive.E{Key: "projectid", Value: projectID}}
+	cur, err := collection.Find(context.TODO(), filter)
+
+	defer cur.Close(context.TODO())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var result []*ArchView
+
+	for cur.Next(context.TODO()) {
+		var elem ArchView
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, &elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
 
 // FindArchViewByID returns an ArchView or error
@@ -192,7 +231,7 @@ func UpdateArchViewComponent(ac ArchViewComponent) error {
 }
 
 // FindArchViewComponentByID returns an ArchView or error
-func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent, error) {
+func FindArchViewComponentByID(id string) (ArchViewComponent, error) {
 	exp := 5 * time.Second
 	ctx, cancel := context.WithTimeout(context.Background(), exp)
 	defer cancel()
@@ -204,4 +243,34 @@ func FindArchViewComponentByID(id string, archViewID string) (ArchViewComponent,
 	fmt.Println(id)
 	err := collection.FindOne(ctx, filter).Decode(&resultComponent)
 	return resultComponent, err
+}
+
+// FindArchViewComponentsByViewID returns an ArchView or error
+func FindArchViewComponentsByViewID(id string) ([]ArchViewComponent, error) {
+	collection := db.DB.Collection(db.ArchViewComponentCollectionName)
+	filter := bson.D{primitive.E{Key: "viewid", Value: id}}
+	cur, err := collection.Find(context.TODO(), filter)
+
+	defer cur.Close(context.TODO())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var result []ArchViewComponent
+
+	for cur.Next(context.TODO()) {
+		var elem ArchViewComponent
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return result, err
+	}
+
+	return result, nil
 }
