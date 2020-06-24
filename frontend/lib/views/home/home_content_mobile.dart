@@ -13,7 +13,7 @@ class HomeContentMobile extends StatelessWidget {
       children: <Widget>[
         CourseDetails(),
         SizedBox(height: 100,),
-        CallToAction('Login'),
+        CallToAction('Start'),
       ],
     );
   }
