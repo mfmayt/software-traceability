@@ -1,13 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/project_page/project_screen.dart';
-import 'package:frontend/widgets/centered_view/centered_view.dart';
-import 'package:frontend/widgets/navigation_bar/navigation_bar_projects_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
