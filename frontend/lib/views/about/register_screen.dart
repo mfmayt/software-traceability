@@ -158,7 +158,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Navigator.push(
                       context, 
                       MaterialPageRoute(
-                        builder: (context) => MainScreen(),
+                        builder: (context) => MainScreen(_futureUser),
                         settings: RouteSettings(arguments: _futureUser)
 
                       ),);

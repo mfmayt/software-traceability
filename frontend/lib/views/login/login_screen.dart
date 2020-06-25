@@ -151,11 +151,13 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: (){
                 password = myPasswordController.text;
                 email = myEmailController.text;
-                _futureUser = userLogin(email,password);                    
+                _futureUser = userLogin(email,password);
+                myPasswordController.clear();
+                myEmailController.clear();
                 Navigator.push(
                   context, 
                   MaterialPageRoute(
-                    builder: (context) => MainScreen(),
+                    builder: (context) => MainScreen(_futureUser),
                     settings: RouteSettings(arguments: _futureUser)
                   ),
                 );

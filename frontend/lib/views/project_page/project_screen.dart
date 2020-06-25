@@ -15,21 +15,72 @@ class _ProjectScreenState extends State<ProjectScreen> {
     final String projectName = ModalRoute.of(context).settings.arguments;
     print(projectName);
     return Center(
-      child: Container(
-        child: RaisedButton(
-          color: primaryColor,
-          textColor: Colors.white,
-          child: Text("Funcional View"),
-          onPressed: () {
-            Navigator.push(
-               context, 
-               MaterialPageRoute(
-                 builder: (context) => FunctionalView(projectName: projectName,),
-                 settings: RouteSettings(arguments: projectName)
-               ),
-             );
-           },
-         ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            "$projectName",
+            style: TextStyle(
+              fontSize: 50,
+              color:Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            
+            children: [
+              Container(
+                child: RaisedButton(
+                  color: primaryColor,
+                  textColor: Colors.white,
+                  child: Text("Funcional View"),
+                  onPressed: () {
+                    Navigator.push(
+                       context, 
+                       MaterialPageRoute(
+                         builder: (context) => FunctionalView(projectName: projectName,),
+                         settings: RouteSettings(arguments: projectName)
+                       ),
+                     );
+                   },
+                 ),
+              ),
+              Container(
+                child: RaisedButton(
+                  color: primaryColor,
+                  textColor: Colors.white,
+                  child: Text("Funcional View"),
+                  onPressed: () {
+                    Navigator.push(
+                       context, 
+                       MaterialPageRoute(
+                         builder: (context) => FunctionalView(projectName: projectName,),
+                         settings: RouteSettings(arguments: projectName)
+                       ),
+                     );
+                   },
+                 ),
+              ),
+              Container(
+                child: RaisedButton(
+                  color: primaryColor,
+                  textColor: Colors.white,
+                  child: Text("Funcional View"),
+                  onPressed: () {
+                    Navigator.push(
+                       context, 
+                       MaterialPageRoute(
+                         builder: (context) => FunctionalView(projectName: projectName,),
+                         settings: RouteSettings(arguments: projectName)
+                       ),
+                     );
+                   },
+                 ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

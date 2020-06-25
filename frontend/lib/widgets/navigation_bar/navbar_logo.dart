@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/views/home/home_view.dart';
 
 class NavBarLogo extends StatelessWidget {
   const NavBarLogo({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      width: 150,
-      child: Image.asset('assets/logo.png'),
-    );
+    return Container(
+      child: SizedBox(
+        height: 80,
+        width: 150,
+        child: FlatButton(
+         onPressed: null,
+         padding: EdgeInsets.all(0.0),
+         child: Image.asset('assets/logo.png'))));
   }
 }
