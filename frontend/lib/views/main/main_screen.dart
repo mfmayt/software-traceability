@@ -132,7 +132,6 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                     ],
                     elevation: 24.0,
-                    
                 ),
                 barrierDismissible: false,
               );

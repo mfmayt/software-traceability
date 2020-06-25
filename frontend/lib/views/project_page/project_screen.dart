@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/views/archviews/arch_views.dart';
+import 'package:frontend/views/development/development_view.dart';
 import 'package:frontend/views/functional_view/functional_view.dart';
 
 class ProjectScreen extends StatefulWidget {
@@ -34,12 +36,12 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 child: RaisedButton(
                   color: primaryColor,
                   textColor: Colors.white,
-                  child: Text("Funcional View"),
+                  child: Text("Architectural View"),
                   onPressed: () {
                     Navigator.push(
                        context, 
                        MaterialPageRoute(
-                         builder: (context) => FunctionalView(projectName: projectName,),
+                         builder: (context) => ArchViewList(),
                          settings: RouteSettings(arguments: projectName)
                        ),
                      );
@@ -66,12 +68,12 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 child: RaisedButton(
                   color: primaryColor,
                   textColor: Colors.white,
-                  child: Text("Funcional View"),
+                  child: Text("Development View"),
                   onPressed: () {
                     Navigator.push(
                        context, 
                        MaterialPageRoute(
-                         builder: (context) => FunctionalView(projectName: projectName,),
+                         builder: (context) => DevelopmentView(projectName: projectName,),
                          settings: RouteSettings(arguments: projectName)
                        ),
                      );
