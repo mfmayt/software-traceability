@@ -50,3 +50,24 @@ func (ac *ArchViewComponents) ListArchViewComponents(rw http.ResponseWriter, r *
 
 	err = data.ToJSON(archViewComponents, rw)
 }
+
+// ListAllComponents handles GET requests
+func (ac *ArchViewComponents) ListAllComponents(rw http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	projectID, ok := vars["projectID"]
+
+	if !ok {
+		io.WriteString(rw, `{{"error": "id not found"}}`)
+		return
+	}
+
+	archViewComponents, err := data.FindArchViewComponentsByProjectID(projectID)
+
+	if err != nil {
+		http.Error(rw, `{{"error": "component not found"}}`, http.StatusInternalServerError)
+		return
+	}
+
+	err = data.ToJSON(archViewComponents, rw)
+}

@@ -119,11 +119,13 @@ func setUserEndpoints(sm *mux.Router, uh *userHandlers.Users) {
 	getUser.Use(auth.Middleware)
 
 	postUs := sm.Methods(http.MethodPost, http.MethodOptions).Subrouter()
-	postUs.HandleFunc("/users/", uh.CreateUser)
+	postUs.HandleFunc("/users", uh.CreateUser)
+	postUs.Use(auth.CORS)
 	postUs.Use(uh.MiddlewareValidateUser)
 
 	loginUser := sm.Methods(http.MethodPost, http.MethodOptions).Subrouter()
-	loginUser.HandleFunc("/login/", uh.LoginUser)
+	loginUser.HandleFunc("/login", uh.LoginUser)
+	loginUser.Use(auth.CORS)
 	loginUser.Use(uh.MiddlewareValidateAuth)
 }
 
@@ -198,6 +200,12 @@ func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchVie
 	listComponents.Use(auth.CORS)
 	listComponents.Use(auth.Middleware)
 	listComponents.Use(auth.ProjectAuthMiddleware)
+
+	listAllComponents := sm.Methods(http.MethodGet, http.MethodOptions).Subrouter()
+	listAllComponents.HandleFunc("/projects/{projectID}/components", ch.ListAllComponents)
+	listAllComponents.Use(auth.CORS)
+	listAllComponents.Use(auth.Middleware)
+	listAllComponents.Use(auth.ProjectAuthMiddleware)
 
 	patchComponent := sm.Methods(http.MethodPatch, http.MethodOptions).Subrouter()
 	patchComponent.HandleFunc("/projects/{projectID}/views/{viewID}/components/{id}/", ch.UpdateArchViewComponent)

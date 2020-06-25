@@ -63,12 +63,13 @@ type ArchViewComponent struct {
 	// TODO: add view id
 
 	//FunctionList is used for development view to show functions of a component
-	FunctionList []string `json:"functions"`
+	FunctionList []string `json:"functions,omitempty" bson:"functionlist,omitempty"`
 
 	//VarList is used for development view to show variables of a component
 	VarList []string `json:"variables,omitempty" bson:"omitempty"`
 
-	// Comments will be in here
+	// Drawing level of the component
+	Level int `json:"level,omitempty" bson:"level,omitempty"`
 }
 
 // UnmarshalJSON parses from json
@@ -249,6 +250,36 @@ func FindArchViewComponentByID(id string) (ArchViewComponent, error) {
 func FindArchViewComponentsByViewID(id string) ([]ArchViewComponent, error) {
 	collection := db.DB.Collection(db.ArchViewComponentCollectionName)
 	filter := bson.D{primitive.E{Key: "viewid", Value: id}}
+	cur, err := collection.Find(context.TODO(), filter)
+
+	defer cur.Close(context.TODO())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var result []ArchViewComponent
+
+	for cur.Next(context.TODO()) {
+		var elem ArchViewComponent
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		result = append(result, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		return result, err
+	}
+
+	return result, nil
+}
+
+// FindArchViewComponentsByProjectID returns an ArchView or error
+func FindArchViewComponentsByProjectID(id string) ([]ArchViewComponent, error) {
+	collection := db.DB.Collection(db.ArchViewComponentCollectionName)
+	filter := bson.D{primitive.E{Key: "projectid", Value: id}}
 	cur, err := collection.Find(context.TODO(), filter)
 
 	defer cur.Close(context.TODO())
