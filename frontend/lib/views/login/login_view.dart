@@ -41,8 +41,7 @@ class _LoginViewState extends State<LoginView> {
                   textColor: Colors.white,
                   onPressed: (){
                     changeColor(Colors.blue);
-                    Navigator.pushNamed(context,"/arch_views");
-                    //locator<NavigationService>().navigateTo(LoginScreenRoute);
+                    Navigator.pushNamed(context,"/login_screen");
                   },
                   child: Text("Login",),
                   onLongPress: (){
@@ -61,7 +60,9 @@ class _LoginViewState extends State<LoginView> {
                   ),
                 ),
                 RaisedButton(
+                  hoverElevation: 10.0,
                   color: Colors.green,
+                  hoverColor: Colors.green[400],
                   textColor: Colors.white,
                   onPressed: (){
                     changeColor(Colors.yellow);

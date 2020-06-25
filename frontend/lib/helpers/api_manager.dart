@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:frontend/constants/url_constants.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/Models/archview_component.dart';
 import 'package:frontend/Models/archview.dart';
 import 'package:frontend/helpers/data_manager.dart';
-import 'package:frontend/constants/app_colors.dart';
 
 class APIManager{
   
