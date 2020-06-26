@@ -202,7 +202,7 @@ func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchVie
 	listComponents.Use(auth.ProjectAuthMiddleware)
 
 	listAllComponents := sm.Methods(http.MethodGet, http.MethodOptions).Subrouter()
-	listAllComponents.HandleFunc("/projects/{projectID}/components", ch.ListAllComponents)
+	listAllComponents.HandleFunc("/projects/{projectID}/components/", ch.ListAllComponents)
 	listAllComponents.Use(auth.CORS)
 	listAllComponents.Use(auth.Middleware)
 	listAllComponents.Use(auth.ProjectAuthMiddleware)
