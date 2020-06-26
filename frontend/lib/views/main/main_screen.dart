@@ -1,67 +1,62 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/login/login_view.dart';
 import 'package:frontend/views/project_page/project_item.dart';
-import 'package:frontend/views/project_page/project_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
-  final myUser ;
+  final User myUser ;
 
-  const MainScreen(Future<User> futureUser, {Key key, this.myUser}) : super(key: key);
+  const MainScreen(User userInfo, {Key key, this.myUser}) : super(key: key);
+
   @override
   _MainScreenState createState() => _MainScreenState(myUser);
 }
 
 class _MainScreenState extends State<MainScreen> {
-  //List<Future<Project>> _futureUserProjects;
-  //final myNavigator = new Navigator();
-  final myUser ;
+  final User myUser ;
   _MainScreenState(this.myUser);
 
   @override
   void initState() { 
     super.initState();
-    print("INITIAL STATE");
-    buildUser(myUser);
+    //this.getUserProjects(myUser.id, myUser.accessToken);
+    
   }
-
-  Future<List<Project>> getUserProjects(userId,userToken) async{
-    print("User TOKEN = $userToken");
+  List<List<Project>> userProjects = [];
+  getUserProjects(userId,userToken) async{
     final response = await http.get(
       baseUrl+'/users/$userToken',
       headers: {
         "Authorization":"Bearer $userToken"
-      }
-      
+      } 
     );
     
-    print("HERE");
+    
     if (response.statusCode == 200) {
-      List<Project> projects = [];
-      print("USER HAS PROJECTS");
-      print(response.body);
-      var b =Project.fromJson(json.decode(response.body));
-      print(b.name);
-      createProject(b.name);
-      print ("b = $b");
-      projects.add(b);
-      return projects;
+      for(int i=0;i<response.body.length;i++){
+        var item = Project.fromJson(json.decode(response.body));
+        if(userProjects.last.length<4){
+          userProjects.last.add(item);
+        }else{
+          userProjects.add([item]);
+        }
+      }
+      return null;
     } else {
       throw Exception('Failed to get Projects');
     }
   }
   
   dynamic buildUser(Future<User>myUser){
-    print("BUILD USER");
     return FutureBuilder<User>(
       future: myUser,
       builder: (context, userInfo) {
-        print("BUILDER");
+        print(userInfo.data);
         if (userInfo.hasData) {
           var a = getUserProjects(userInfo.data.id, userInfo.data.accessToken);
           print("a = $a");
@@ -75,32 +70,32 @@ class _MainScreenState extends State<MainScreen> {
                 icon: Icon(Icons.arrow_back),
                 onPressed: (){
                   Navigator.pop(context);
-                  //locator<NavigationService>().goBack();
                 },
               ),
               Text("Login failed \n ${userInfo.error}")  
             ]
           );
+        }else{
+          return CircularProgressIndicator();
         }
-        return CircularProgressIndicator();
       },
     );
   }
   
-  final List<List> general_list =[["Software Tracker"]];
+  final List<List> generalList =[["Software Tracker"]];
 
   dynamic createProject(String projectName){
     setState(() {
-      if(general_list.last.length<4){
-        general_list.last.add(projectName);
+      if(generalList.last.length<4){
+        generalList.last.add(projectName);
       }else{
-        general_list.add([projectName]);
+        generalList.add([projectName]);
       }
     });
   }
-
   
   var projectNameController = new TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     //final Future<User> myUser = ModalRoute.of(context).settings.arguments;
@@ -110,41 +105,45 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         backgroundColor: Colors.blue,
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.add), 
-            onPressed: () {
-              // Creates a pop up.
-              showDialog(
-                context: context,
-                builder: (_)=> AlertDialog(
-                    title: Text("Enter a name for your project"),
-                    content: TextField(
-                      maxLength: 30,
-                      controller: projectNameController,
-                    ),
-                    actions: [
-                      FlatButton(
-                        child: Text("Confirm"),
-                        onPressed: () {
-                          createProject(projectNameController.text);
-                          Navigator.of(context, rootNavigator: true).pop('dialog');
-                        },
+          Tooltip(
+            verticalOffset: 0,
+            message: "Add Project",
+            child: IconButton(
+              icon: Icon(Icons.add), 
+              onPressed: () {
+                // Creates a pop up.
+                showDialog(
+                  context: context,
+                  builder: (_)=> AlertDialog(
+                      title: Text("Enter a name for your project"),
+                      content: TextField(
+                        maxLength: 30,
+                        controller: projectNameController,
                       ),
-                    ],
-                    elevation: 24.0,
-                ),
-                barrierDismissible: false,
-              );
-            },
-            ),
+                      actions: [
+                        FlatButton(
+                          child: Text("Confirm"),
+                          onPressed: () {
+                            createProject(projectNameController.text);
+                            Navigator.of(context, rootNavigator: true).pop('dialog');
+                          },
+                        ),
+                      ],
+                      elevation: 24.0,
+                  ),
+                  barrierDismissible: false,
+                );
+              },
+              ),
+          ),
           IconButton(
+            tooltip: "Return to Home",
             icon: Icon(Icons.home), 
             onPressed: (){
               Navigator.push(
                 context, 
                 MaterialPageRoute(
                   builder: (context) => HomeView(),
-                  //settings: RouteSettings(arguments: _futureUser)
                 ),
               );
             }
@@ -152,7 +151,12 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: Icon(Icons.exit_to_app), 
             onPressed: (){
-              Navigator.pop(context);
+              Navigator.push(
+                context, 
+                MaterialPageRoute(
+                  builder: (context) => LoginView(),
+                ),
+              );
             })
         ],
       ),
@@ -191,6 +195,7 @@ class _MainScreenState extends State<MainScreen> {
                         ),
                       ),
                     ),
+                    //Text(myUser.name),
                     // Add project Card
                     Container(
                       padding: EdgeInsets.fromLTRB(10,10,10,0),
@@ -243,13 +248,11 @@ class _MainScreenState extends State<MainScreen> {
                                   );
                                 },
                               ),
-                              //myUserInfo,
                             ]
                           ),
                         ),
                       ),
                     ),
-                    
                   ],
                 ),
               ],
@@ -258,7 +261,7 @@ class _MainScreenState extends State<MainScreen> {
           Expanded(
             flex: 3,
             child: ListView.builder(
-              itemCount: general_list.length,
+              itemCount: generalList.length,
               itemBuilder: (BuildContext context,int index){
                 return Container(
                   height: 200,
@@ -266,9 +269,9 @@ class _MainScreenState extends State<MainScreen> {
                     //reverse: true,
                     scrollDirection: Axis.horizontal,
                     //padding: const EdgeInsets.all(10),
-                    itemCount: general_list[index].length,
+                    itemCount: generalList[index].length,
                     itemBuilder: (BuildContext context,int index2){
-                      return ProjectItem(projectName: general_list[index][index2]);
+                      return ProjectItem(projectName: generalList[index][index2]);
                     },
                   ),
                 );

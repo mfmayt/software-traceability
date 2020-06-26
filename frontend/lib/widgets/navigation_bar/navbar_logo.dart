@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/views/home/home_view.dart';
-
 class NavBarLogo extends StatelessWidget {
   const NavBarLogo({Key key}) : super(key: key);
 
