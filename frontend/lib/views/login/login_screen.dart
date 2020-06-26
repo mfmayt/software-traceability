@@ -150,67 +150,61 @@ class _LoginScreenState extends State<LoginScreen> {
                 setState(() {
                   _futureUser = userLogin(email,password);
                   showDialog(
-                  context: context,
-                  builder: (_)=> AlertDialog(
-                    title: Text("Waiting..."),
-                    content: FutureBuilder<User>(
-                      future:_futureUser,
-                      builder: (context,snapshot){
-                        if(snapshot.connectionState == ConnectionState.done){
-                          if(snapshot.hasData){
-                            return Container(
-                              height: 200,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Welcome ${snapshot.data.name}'),
-                                  RaisedButton(
-                                    color: primaryColor,
-                                    child: Text("Go to your projects"),
-                                    onPressed: () {
-                                      print(snapshot.data);
-                                      Navigator.push(
-                                      context, 
-                                      MaterialPageRoute(
-                                        builder: (context) => MainScreen(myUser: snapshot.data),
-                                        settings: RouteSettings(arguments: snapshot.data)
-                                      ),
-                                    );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
-                            /*
-                            
-                            
-                            return Text('Welcome ${snapshot.data.name}');
-                            */
-                          }else{
-                            return Container(
-                              height: 200,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('Failed to Login'),
-                                  RaisedButton(
-                                    color: primaryColor,
-                                    child: Text("OK"),
-                                    onPressed: () {
-                                      Navigator.of(context, rootNavigator: true).pop('dialog');
-                                    },
-                                  ),
-                                ],
-                              ),
-                            );
+                    context: context,
+                    builder: (_)=> AlertDialog(
+                      title: Text("Waiting..."),
+                      content: FutureBuilder<User>(
+                        future:_futureUser,
+                        builder: (context,snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            if(snapshot.hasData){
+                              return Container(
+                                height: 200,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Welcome ${snapshot.data.name}'),
+                                    RaisedButton(
+                                      color: primaryColor,
+                                      child: Text("Go to your projects"),
+                                      onPressed: () {
+                                        Navigator.push(
+                                        context, 
+                                        MaterialPageRoute(
+                                          builder: (context) => MainScreen(myUser: snapshot.data),
+                                          settings: RouteSettings(arguments: snapshot.data)
+                                        ),
+                                      );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }else{
+                              return Container(
+                                height: 200,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Failed to Login'),
+                                    RaisedButton(
+                                      color: primaryColor,
+                                      child: Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context, rootNavigator: true).pop('dialog');
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                          }else {
+                            return Container(height:200,child: Center(child: CircularProgressIndicator()));
                           }
-                        }else {
-                          return Container(height:200,child: Center(child: CircularProgressIndicator()));
                         }
-                      }
-                    ),
-                  )
-                );
+                      ),
+                    )
+                  );
                 });
                 myPasswordController.clear();
                 myEmailController.clear();

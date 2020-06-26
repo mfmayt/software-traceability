@@ -37,16 +37,19 @@ class _MainScreenState extends State<MainScreen> {
       } 
     );
     if (response.statusCode == 200) {
-      //print(response.body);
       print(response.body);
+      var projectList = (json.decode(response.body) as List);
+      print(projectList[0]);
+      /*
       for(int i=0;i<response.body.length;i++){
-        var item = Project.fromJson(json.decode(response.body[i]));
+
         if(userProjects.last.length<4){
           userProjects.last.add(item);
         }else{
           userProjects.add([item]);
         }
       }
+      */
       return null;
     } else {
       throw Exception('Failed to get Projects');
