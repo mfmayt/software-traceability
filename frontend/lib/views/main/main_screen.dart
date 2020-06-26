@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/url_constants.dart';
+import 'package:frontend/constants/url_constants.dart' as constants;
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/project_page/project_item.dart';
 import 'package:frontend/views/project_page/project_screen.dart';
@@ -33,7 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   Future<List<Project>> getUserProjects(userId,userToken) async{
     print("User TOKEN = $userToken");
     final response = await http.get(
-      baseUrl+'/users/$userToken',
+      constants.baseUrl + '/users/$userToken',
       headers: {
         "Authorization":"Bearer $userToken"
       }
