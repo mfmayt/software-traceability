@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/main/main_screen.dart';
 
 class FunctionalView extends StatefulWidget {
   final String projectName ;
@@ -87,8 +88,7 @@ class _FunctionalViewState extends State<FunctionalView> {
               Navigator.push(
                 context, 
                 MaterialPageRoute(
-                  builder: (context) => HomeView(),
-                  //settings: RouteSettings(arguments: _futureUser)
+                  builder: (context) =>HomeView(),
                 ),
               );
             }

@@ -50,6 +50,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       myIcon = Icon(Icons.visibility_off);
     }
   }
+  User buildUser(_futureUser){
+    var currentUser;
+    FutureBuilder<User>(
+      future:_futureUser,
+      builder: (context,snapshot){
+        if(snapshot.hasData)
+          currentUser = new User(
+          accessToken: snapshot.data.accessToken,
+          id: snapshot.data.id,
+          name: snapshot.data.name,
+          role: snapshot.data.role,
+          email: snapshot.data.email,
+          password: snapshot.data.password
+        );
+      }
+    );
+    return currentUser;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,13 +172,53 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     //print (password);
                     
                     _futureUser = userRegister(name,email,password);
-                    
+                    showDialog(
+                      context: context,
+                      builder: (_)=> AlertDialog(
+                        title: Text("Waiting..."),
+                        content: FutureBuilder<User>(
+                          future:_futureUser,
+                          builder: (context,snapshot){
+                            if(snapshot.connectionState == ConnectionState.done)
+                              if(snapshot.hasData){
+                                var userInfo = buildUser(_futureUser);
+                                Navigator.push(
+                                  context, 
+                                  MaterialPageRoute(
+                                    builder: (context) => MainScreen(userInfo),
+                                    settings: RouteSettings(arguments: snapshot)
+                                  ),
+                                );
+                                return Text('Welcome ${snapshot.data.name}');
+                              }else
+                                return Container(
+                                  height: 200,
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Failed to Login'),
+                                      FlatButton(
+                                        child: Text("OK"),
+                                        onPressed: () {
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                );
+                            else {
+                              return Container(height:200,child: Center(child: CircularProgressIndicator()));
+                            }
+                            
+                          }
+                        ),
+                      )
+                    );
                     Navigator.push(
                       context, 
                       MaterialPageRoute(
-                        builder: (context) => MainScreen(_futureUser),
+                        builder: (context) => MainScreen(buildUser(_futureUser)),
                         settings: RouteSettings(arguments: _futureUser)
-
                       ),);
                   },
                   child: Text("Register",),

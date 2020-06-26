@@ -40,7 +40,26 @@ class _LoginScreenState extends State<LoginScreen> {
       throw Exception('Failed to login');
     }
   }
-
+  
+  User buildUser(_futureUser){
+    var currentUser;
+    FutureBuilder<User>(
+      future:_futureUser,
+      builder: (context,snapshot){
+        if(snapshot.hasData)
+          currentUser = new User(
+          accessToken: snapshot.data.accessToken,
+          id: snapshot.data.id,
+          name: snapshot.data.name,
+          role: snapshot.data.role,
+          email: snapshot.data.email,
+          password: snapshot.data.password
+        );
+      }
+    );
+    return currentUser;
+  }
+  
   
 
   toogleVisibility(){
@@ -88,7 +107,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         validator: (value){
                           if(value.isEmpty){
                             return "You can't have an empty email!";
-                          }
+                          }else
+                          return null;
                         },
                         key: _emailFormKey,
                         controller: myEmailController,
@@ -112,11 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       autocorrect: false,
                       toolbarOptions: ToolbarOptions(paste: true,),
                       maxLength: 20,
-                      /*
-                      onChanged: (input){
-                        print(myPasswordController.text);
-                      },
-                      */
                       decoration: InputDecoration(
                         labelText: 'Password',
                         icon: Icon(Icons.lock),
@@ -152,15 +167,63 @@ class _LoginScreenState extends State<LoginScreen> {
                 password = myPasswordController.text;
                 email = myEmailController.text;
                 _futureUser = userLogin(email,password);
-                myPasswordController.clear();
-                myEmailController.clear();
+                showDialog(
+                  context: context,
+                  builder: (_)=> AlertDialog(
+                    title: Text("Waiting..."),
+                    content: FutureBuilder<User>(
+                      future:_futureUser,
+                      builder: (context,snapshot){
+                        print("TEST");
+                        if(snapshot.connectionState == ConnectionState.done){
+                          if(snapshot.hasData){
+                            var userInfo = buildUser(_futureUser);
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(
+                                builder: (context) => MainScreen(userInfo),
+                                settings: RouteSettings(arguments: snapshot)
+                              ),
+                            );
+                            return Text('Welcome ${snapshot.data.name}');
+                          }else{
+                            print("TEST2");
+                            return null;
+                            /*Container(
+                              height: 200,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Failed to Login'),
+                                  FlatButton(
+                                    child: Text("OK"),
+                                    onPressed: () {
+                                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );*/
+                          }
+                        }else {
+                          print("TEST3");
+                          return Container(height:200,child: Center(child: CircularProgressIndicator()));
+                        }
+                        
+                      }
+                    ),
+                  )
+                );
+
                 Navigator.push(
                   context, 
                   MaterialPageRoute(
-                    builder: (context) => MainScreen(_futureUser),
+                    builder: (context) => MainScreen(buildUser(_futureUser)),
                     settings: RouteSettings(arguments: _futureUser)
                   ),
                 );
+                myPasswordController.clear();
+                myEmailController.clear();
               },
               child: Text("Login",),
             )

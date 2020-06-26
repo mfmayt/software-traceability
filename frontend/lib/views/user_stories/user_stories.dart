@@ -192,7 +192,7 @@ class _UserStoriesState extends State<UserStories> {
               ),
               Spacer(),
               Expanded(
-                flex: 20,
+                flex: 10,
                 child: TextField(
                     controller: _controller,
                     onSubmitted: (String value) async {
