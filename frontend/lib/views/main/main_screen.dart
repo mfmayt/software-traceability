@@ -11,8 +11,9 @@ import 'package:http/http.dart' as http;
 class MainScreen extends StatefulWidget {
   final User myUser ;
 
-  const MainScreen(User userInfo, {Key key, this.myUser}) : super(key: key);
+  const MainScreen({Key key, this.myUser}) : super(key: key);
 
+  
   @override
   _MainScreenState createState() => _MainScreenState(myUser);
 }
@@ -22,24 +23,24 @@ class _MainScreenState extends State<MainScreen> {
   _MainScreenState(this.myUser);
 
   @override
-  void initState() { 
+  void initState() {
+    print(myUser.id);
     super.initState();
-    //this.getUserProjects(myUser.id, myUser.accessToken);
-    
+    this.getUserProjects(myUser.id, myUser.accessToken);
   }
   List<List<Project>> userProjects = [];
   getUserProjects(userId,userToken) async{
     final response = await http.get(
-      baseUrl+'/users/$userToken',
+      baseUrl+'/users/'+userId+'/projects',
       headers: {
-        "Authorization":"Bearer $userToken"
+        "Authorization":"Bearer "+userToken
       } 
     );
-    
-    
     if (response.statusCode == 200) {
+      //print(response.body);
+      print(response.body);
       for(int i=0;i<response.body.length;i++){
-        var item = Project.fromJson(json.decode(response.body));
+        var item = Project.fromJson(json.decode(response.body[i]));
         if(userProjects.last.length<4){
           userProjects.last.add(item);
         }else{
@@ -50,36 +51,6 @@ class _MainScreenState extends State<MainScreen> {
     } else {
       throw Exception('Failed to get Projects');
     }
-  }
-  
-  dynamic buildUser(Future<User>myUser){
-    return FutureBuilder<User>(
-      future: myUser,
-      builder: (context, userInfo) {
-        print(userInfo.data);
-        if (userInfo.hasData) {
-          var a = getUserProjects(userInfo.data.id, userInfo.data.accessToken);
-          print("a = $a");
-          return Text(userInfo.data.name);
-        }
-        else if (userInfo.hasError) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children:<Widget>[
-              IconButton(
-                icon: Icon(Icons.arrow_back),
-                onPressed: (){
-                  Navigator.pop(context);
-                },
-              ),
-              Text("Login failed \n ${userInfo.error}")  
-            ]
-          );
-        }else{
-          return CircularProgressIndicator();
-        }
-      },
-    );
   }
   
   final List<List> generalList =[["Software Tracker"]];
@@ -182,7 +153,7 @@ class _MainScreenState extends State<MainScreen> {
                             child: Center(
                               child: RichText(
                                 text: TextSpan(
-                                  text: "Welcome",
+                                  text: "Welcome "+ myUser.name,
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize:20,

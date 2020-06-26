@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
@@ -21,15 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
   var visible = false;
   var email ;
   var password;
-  Future<User> _futureUser;
-
   final myNavigator = new Navigator();
 
   Future<User> userLogin(email,password) async {
     final http.Response response = await http.post(
       baseUrl + '/login',
       body: jsonEncode(<String, String>{
-        'email':email,
+        'email': email,
         'password': password,
       }),
     );
@@ -41,27 +40,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
   
-  User buildUser(_futureUser){
-    var currentUser;
-    FutureBuilder<User>(
-      future:_futureUser,
-      builder: (context,snapshot){
-        if(snapshot.hasData)
-          currentUser = new User(
-          accessToken: snapshot.data.accessToken,
-          id: snapshot.data.id,
-          name: snapshot.data.name,
-          role: snapshot.data.role,
-          email: snapshot.data.email,
-          password: snapshot.data.password
-        );
-      }
-    );
-    return currentUser;
-  }
-  
-  
-
   toogleVisibility(){
     if(!visible){
       visible = true;
@@ -75,6 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Future<User> _futureUser;
     return Container(
       color: Colors.white,
       child: Center(
@@ -166,36 +145,56 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: (){
                 password = myPasswordController.text;
                 email = myEmailController.text;
-                _futureUser = userLogin(email,password);
-                showDialog(
+                
+                
+                setState(() {
+                  _futureUser = userLogin(email,password);
+                  showDialog(
                   context: context,
                   builder: (_)=> AlertDialog(
                     title: Text("Waiting..."),
                     content: FutureBuilder<User>(
                       future:_futureUser,
                       builder: (context,snapshot){
-                        print("TEST");
                         if(snapshot.connectionState == ConnectionState.done){
                           if(snapshot.hasData){
-                            var userInfo = buildUser(_futureUser);
-                            Navigator.push(
-                              context, 
-                              MaterialPageRoute(
-                                builder: (context) => MainScreen(userInfo),
-                                settings: RouteSettings(arguments: snapshot)
+                            return Container(
+                              height: 200,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text('Welcome ${snapshot.data.name}'),
+                                  RaisedButton(
+                                    color: primaryColor,
+                                    child: Text("Go to your projects"),
+                                    onPressed: () {
+                                      print(snapshot.data);
+                                      Navigator.push(
+                                      context, 
+                                      MaterialPageRoute(
+                                        builder: (context) => MainScreen(myUser: snapshot.data),
+                                        settings: RouteSettings(arguments: snapshot.data)
+                                      ),
+                                    );
+                                    },
+                                  ),
+                                ],
                               ),
                             );
+                            /*
+                            
+                            
                             return Text('Welcome ${snapshot.data.name}');
+                            */
                           }else{
-                            print("TEST2");
-                            return null;
-                            /*Container(
+                            return Container(
                               height: 200,
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text('Failed to Login'),
-                                  FlatButton(
+                                  RaisedButton(
+                                    color: primaryColor,
                                     child: Text("OK"),
                                     onPressed: () {
                                       Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -203,25 +202,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 ],
                               ),
-                            );*/
+                            );
                           }
                         }else {
-                          print("TEST3");
                           return Container(height:200,child: Center(child: CircularProgressIndicator()));
                         }
-                        
                       }
                     ),
                   )
                 );
-
-                Navigator.push(
-                  context, 
-                  MaterialPageRoute(
-                    builder: (context) => MainScreen(buildUser(_futureUser)),
-                    settings: RouteSettings(arguments: _futureUser)
-                  ),
-                );
+                });
                 myPasswordController.clear();
                 myEmailController.clear();
               },

@@ -15,7 +15,10 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
+        title: Text(projectName+ " Development View"),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           IconButton(
@@ -61,6 +64,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
             })
         ],
       ),
+      body: Center(child: Text("Hi")),
     );
   }
 }
