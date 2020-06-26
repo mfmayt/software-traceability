@@ -10,10 +10,8 @@ import 'package:http/http.dart' as http;
 
 class MainScreen extends StatefulWidget {
   final User myUser ;
-
   const MainScreen({Key key, this.myUser}) : super(key: key);
 
-  
   @override
   _MainScreenState createState() => _MainScreenState(myUser);
 }
@@ -24,11 +22,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   void initState() {
-    print(myUser.id);
     super.initState();
     this.getUserProjects(myUser.id, myUser.accessToken);
   }
-  List<List<Project>> userProjects = [];
+
+  List<List<Project>> userProjects = [[]];
   getUserProjects(userId,userToken) async{
     final response = await http.get(
       baseUrl+'/users/'+userId+'/projects',
@@ -37,33 +35,28 @@ class _MainScreenState extends State<MainScreen> {
       } 
     );
     if (response.statusCode == 200) {
-      print(response.body);
-      var projectList = (json.decode(response.body) as List);
-      print(projectList[0]);
-      /*
-      for(int i=0;i<response.body.length;i++){
-
-        if(userProjects.last.length<4){
-          userProjects.last.add(item);
-        }else{
-          userProjects.add([item]);
+      setState(() {
+        var projectList = (json.decode(response.body) as List).map((project) => Project.fromJson(project)).toList();
+        for(int i=0;i<projectList.length;i++){
+          if(userProjects.last.length<4){
+            userProjects.last.add(projectList[i]);
+          }else{
+            userProjects.add([projectList[i]]);
+          }
         }
-      }
-      */
-      return null;
-    } else {
+        return null;
+      });
+    }else{
       throw Exception('Failed to get Projects');
     }
   }
   
-  final List<List> generalList =[["Software Tracker"]];
-
   dynamic createProject(String projectName){
     setState(() {
-      if(generalList.last.length<4){
-        generalList.last.add(projectName);
+      if(userProjects.last.length<4){
+        userProjects.last.add(Project(name: projectName));
       }else{
-        generalList.add([projectName]);
+        userProjects.add([Project(name: projectName)]);
       }
     });
   }
@@ -235,7 +228,7 @@ class _MainScreenState extends State<MainScreen> {
           Expanded(
             flex: 3,
             child: ListView.builder(
-              itemCount: generalList.length,
+              itemCount: userProjects.length,
               itemBuilder: (BuildContext context,int index){
                 return Container(
                   height: 200,
@@ -243,9 +236,9 @@ class _MainScreenState extends State<MainScreen> {
                     //reverse: true,
                     scrollDirection: Axis.horizontal,
                     //padding: const EdgeInsets.all(10),
-                    itemCount: generalList[index].length,
+                    itemCount: userProjects[index].length,
                     itemBuilder: (BuildContext context,int index2){
-                      return ProjectItem(projectName: generalList[index][index2]);
+                      return ProjectItem(projectName: userProjects[index][index2].name);
                     },
                   ),
                 );
