@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:html';
 import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_view.dart';
@@ -51,27 +53,46 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
   
-  dynamic createProject(String projectName){
+  Future<Project>postProject(String projectName,userToken) async{
+    final response = await http.post(
+      baseUrl+'/projects',
+      headers: {
+        "Authorization":"Bearer "+userToken
+      },
+      body: jsonEncode(<String, String>{
+        'name':projectName
+      })
+    );
+
+    if (response.statusCode == 200) {
+      return Project.fromJson(json.decode(response.body));
+    } else {
+      throw Exception('Failed to login');
+    }
+  }
+
+  dynamic createProject(Project a){
     setState(() {
       if(userProjects.last.length<4){
-        userProjects.last.add(Project(name: projectName));
+        userProjects.last.add(a);
       }else{
-        userProjects.add([Project(name: projectName)]);
+        userProjects.add([a]);
       }
     });
   }
   
   var projectNameController = new TextEditingController();
-  
+  Future<Project> _futureProject;
   @override
   Widget build(BuildContext context) {
-    //final Future<User> myUser = ModalRoute.of(context).settings.arguments;
     
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blue,
         actions: <Widget>[
+          /*
           Tooltip(
             verticalOffset: 0,
             message: "Add Project",
@@ -103,6 +124,7 @@ class _MainScreenState extends State<MainScreen> {
               },
               ),
           ),
+          */
           IconButton(
             tooltip: "Return to Home",
             icon: Icon(Icons.home), 
@@ -116,6 +138,7 @@ class _MainScreenState extends State<MainScreen> {
             }
           ),
           IconButton(
+            tooltip: "Logout",
             icon: Icon(Icons.exit_to_app), 
             onPressed: (){
               Navigator.push(
@@ -191,28 +214,69 @@ class _MainScreenState extends State<MainScreen> {
                                 icon: Icon(Icons.add,color: Colors.blue,size: 35,),
                                 onPressed: () {
                                   // Creates a pop up.
-                                  showDialog(
-                                    context: context,
-                                    builder: (_)=> AlertDialog(
-                                        title: Text("Enter a name for your project"),
-                                        content: TextField(
-                                          maxLength: 30,
-                                          controller: projectNameController,
-                                        ),
+                                  setState(() {
+                                    showDialog(
+                                      barrierDismissible: false,
+                                      context: context,
+                                      builder: (_)=> AlertDialog(
+                                        elevation: 24.0,
                                         actions: [
                                           FlatButton(
                                             child: Text("Confirm"),
                                             onPressed: () {
-                                              createProject(projectNameController.text);
+                                              _futureProject = postProject(projectNameController.text, myUser.accessToken);
                                               projectNameController.clear();
                                               Navigator.of(context, rootNavigator: true).pop('dialog');
                                             },
                                           ),
                                         ],
-                                        elevation: 24.0,
-                                    ),
-                                    barrierDismissible: false,
-                                  );
+                                        title: Text("Enter a name for your project"),
+                                        content: (_futureProject==null)
+                                        ?TextField(
+                                          maxLength: 30,
+                                          controller: projectNameController,
+                                        )
+                                        :FutureBuilder(
+                                          future: _futureProject,
+                                          builder: (context,snapshot){
+                                            if(snapshot.connectionState == ConnectionState.done){
+                                              if(snapshot.hasData){
+                                                print("SNAPSHOT HAS DATA");
+                                                return Container(
+                                                  height: 200,
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Text('Project Added'),
+                                                    ],
+                                                  ),
+                                                );
+                                              }else{
+                                                return Container(
+                                                  height: 200,
+                                                  child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Text('Failed to add project'),
+                                                      RaisedButton(
+                                                        color: primaryColor,
+                                                        child: Text("OK"),
+                                                        onPressed: () {
+                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }
+                                            }else {
+                                              return Container(height:200,child: Center(child: CircularProgressIndicator()));
+                                            }
+                                          }
+                                        )
+                                      ),
+                                    );
+                                  });
                                 },
                               ),
                             ]
