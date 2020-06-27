@@ -142,7 +142,7 @@ func setProjectEndpoints(sm *mux.Router, ph *projectHandlers.Projects) {
 	getProjList.Use(auth.Middleware)
 
 	postProj := sm.Methods(http.MethodPost, http.MethodOptions).Subrouter()
-	postProj.HandleFunc("/projects/", ph.CreateProject)
+	postProj.HandleFunc("/projects", ph.CreateProject)
 	postProj.Use(auth.CORS)
 	postProj.Use(auth.Middleware)
 	postProj.Use(ph.MiddlewareValidateProject)
@@ -202,7 +202,7 @@ func setArchViewComponentEndpoints(sm *mux.Router, ch *componentHandlers.ArchVie
 	listComponents.Use(auth.ProjectAuthMiddleware)
 
 	listAllComponents := sm.Methods(http.MethodGet, http.MethodOptions).Subrouter()
-	listAllComponents.HandleFunc("/projects/{projectID}/components", ch.ListAllComponents)
+	listAllComponents.HandleFunc("/projects/{projectID}/components/", ch.ListAllComponents)
 	listAllComponents.Use(auth.CORS)
 	listAllComponents.Use(auth.Middleware)
 	listAllComponents.Use(auth.ProjectAuthMiddleware)
@@ -238,4 +238,10 @@ func setLinksEndpoints(sm *mux.Router, lh *linkHandlers.Links) {
 	postLink.Use(auth.Middleware)
 	postLink.Use(auth.ProjectAuthMiddleware)
 	postLink.Use(lh.MiddlewareValidateLink)
+
+	getLinksOfComponent := sm.Methods(http.MethodGet, http.MethodOptions).Subrouter()
+	getLinksOfComponent.HandleFunc("/projects/{projectID}/components/{componentID}/links", lh.GetLinkedComponents)
+	getLinksOfComponent.Use(auth.CORS)
+	getLinksOfComponent.Use(auth.Middleware)
+	getLinksOfComponent.Use(auth.ProjectAuthMiddleware)
 }

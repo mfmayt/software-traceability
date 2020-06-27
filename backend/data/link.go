@@ -137,6 +137,58 @@ func FindLinkByID(id string) (Link, error) {
 	return resultLink, err
 }
 
+func FindLinkedComponents(id string) ([]ArchViewComponent, error) {
+	linkCollection := db.DB.Collection(db.LinkCollectionName)
+	componentCollection := db.DB.Collection(db.ArchViewComponentCollectionName)
+
+	var result []string
+	var ret []ArchViewComponent
+
+	filter := bson.M{
+		"$or": []interface{}{
+			bson.M{"from": id},
+			bson.M{"to": id},
+		},
+	}
+
+	cur, err := linkCollection.Find(context.TODO(), filter)
+
+	defer cur.Close(context.TODO())
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for cur.Next(context.TODO()) {
+		var elem Link
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if elem.From == id {
+			result = append(result, elem.To)
+		} else {
+			result = append(result, elem.From)
+		}
+	}
+	filter = bson.M{"id": bson.M{"$in": result}}
+	cur, err = componentCollection.Find(context.TODO(), filter)
+
+	for cur.Next(context.TODO()) {
+		var elem ArchViewComponent
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+		ret = append(ret, elem)
+	}
+
+	if err := cur.Err(); err != nil {
+		log.Fatal(err)
+	}
+	return ret, err
+}
+
 func inView(toID string, fromID string) bool {
 	c1, err := FindArchViewComponentByID(toID)
 	c2, err := FindArchViewComponentByID(fromID)

@@ -5,6 +5,7 @@ import 'package:frontend/Models/arguments.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/Models/archview_component.dart';
+import 'package:frontend/Models/link.dart';
 import 'package:frontend/helpers/api_manager.dart' as api;
 
 class UserStories extends StatefulWidget {
@@ -24,9 +25,17 @@ class _UserStoriesState extends State<UserStories> {
   String viewID;
   String newUserStory;
   String newUserKind;
+  List<ArchViewComponent> components = [];
 
   void fetchArchViewComponents(http.Client client) async {
     userStories = await api.APIManager.getArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");
+    setState(() => {
+    });
+  }
+
+  void fetchAllArchViewComponents(http.Client client) async {
+    components = await api.APIManager.getAllArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789");
+
     setState(() => {
     });
   }
@@ -43,6 +52,8 @@ class _UserStoriesState extends State<UserStories> {
   @override void initState() {
     this.fetchArchViewComponents(http.Client());
     this.fetchArchView(http.Client());
+    this.fetchAllArchViewComponents(http.Client());
+    
     super.initState();
   }
   
@@ -66,6 +77,18 @@ class _UserStoriesState extends State<UserStories> {
     setState(() {
         this.fetchArchView(http.Client());
     });
+
+  }
+
+  _addLink(String from, String to) async {
+    Link l = Link(
+      from: from,
+      to: to,
+      projectID: projectID,
+      kind: "required",
+    );
+    Link addedLink = await api.APIManager.addLink(l);
+    print(addedLink.id);
   }
 
   @override
@@ -73,6 +96,33 @@ class _UserStoriesState extends State<UserStories> {
     final ScreenArguments args = ModalRoute.of(context).settings.arguments;
     this.projectID = args.projectID;
     this.viewID = args.viewID;
+
+    Widget _setupAlertDialoadContainer(String from) {       
+    return Container(
+      height: 400.0,
+      width: 600.0,
+      child: Stack(
+        overflow: Overflow.visible,
+        children: <Widget>[ 
+          ListView.builder(
+          scrollDirection: Axis.vertical,
+          itemCount: components.length,
+          itemBuilder: (BuildContext context, int index){
+            final component = components[index];
+          
+            return ListTile(
+              title: Text(component.description),
+              onTap: ()=>{
+                   _addLink(from, component.id)
+                },
+              leading: Icon( component.kind == "userStory" ? Icons.people : (component.kind == "functional" ? Icons.build : Icons.computer)),
+            );
+          },
+        ),
+        ]
+      ),
+    );
+  }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,13 +219,34 @@ class _UserStoriesState extends State<UserStories> {
               final userStory = userStories[index];
 
               return Padding(
-                padding: const EdgeInsets.only(right: 22.0), //(8.0),
+                padding: const EdgeInsets.only(right: 22.0),
                 child: ListTile(
                   leading: IconButton(
                     onPressed: (){
-                      // this._addUserStory();              
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context){
+                          return AlertDialog(
+                            title: Text("Select from list!"),
+                            content: _setupAlertDialoadContainer(userStory.id),
+                          );
+                        }  
+                      );        
                     },
                     icon: Icon(Icons.add),
+                    ),
+                    trailing: IconButton(
+                      onPressed: (){
+                        showDialog( // TODO: should navigate a new screen and show listed components
+                          context: context,
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              title: Text("Linked Components desc"),
+                            );
+                          },
+                          );
+                      },
+                      icon: Icon(Icons.details),
                     ),
                   title: Text(userStory.description),
                 ),
