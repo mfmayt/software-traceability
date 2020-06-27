@@ -92,39 +92,6 @@ class _MainScreenState extends State<MainScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.blue,
         actions: <Widget>[
-          /*
-          Tooltip(
-            verticalOffset: 0,
-            message: "Add Project",
-            child: IconButton(
-              icon: Icon(Icons.add), 
-              onPressed: () {
-                // Creates a pop up.
-                showDialog(
-                  context: context,
-                  builder: (_)=> AlertDialog(
-                      title: Text("Enter a name for your project"),
-                      content: TextField(
-                        maxLength: 30,
-                        controller: projectNameController,
-                      ),
-                      actions: [
-                        FlatButton(
-                          child: Text("Confirm"),
-                          onPressed: () {
-                            createProject(projectNameController.text);
-                            Navigator.of(context, rootNavigator: true).pop('dialog');
-                          },
-                        ),
-                      ],
-                      elevation: 24.0,
-                  ),
-                  barrierDismissible: false,
-                );
-              },
-              ),
-          ),
-          */
           IconButton(
             tooltip: "Return to Home",
             icon: Icon(Icons.home), 
@@ -220,59 +187,78 @@ class _MainScreenState extends State<MainScreen> {
                                       context: context,
                                       builder: (_)=> AlertDialog(
                                         elevation: 24.0,
-                                        actions: [
-                                          FlatButton(
-                                            child: Text("Confirm"),
-                                            onPressed: () {
-                                              _futureProject = postProject(projectNameController.text, myUser.accessToken);
-                                              projectNameController.clear();
-                                              Navigator.of(context, rootNavigator: true).pop('dialog');
-                                            },
-                                          ),
-                                        ],
                                         title: Text("Enter a name for your project"),
-                                        content: (_futureProject==null)
-                                        ?TextField(
-                                          maxLength: 30,
-                                          controller: projectNameController,
-                                        )
-                                        :FutureBuilder(
-                                          future: _futureProject,
-                                          builder: (context,snapshot){
-                                            if(snapshot.connectionState == ConnectionState.done){
-                                              if(snapshot.hasData){
-                                                print("SNAPSHOT HAS DATA");
-                                                return Container(
-                                                  height: 200,
-                                                  child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Text('Project Added'),
-                                                    ],
-                                                  ),
-                                                );
-                                              }else{
-                                                return Container(
-                                                  height: 200,
-                                                  child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Text('Failed to add project'),
-                                                      RaisedButton(
-                                                        color: primaryColor,
-                                                        child: Text("OK"),
-                                                        onPressed: () {
-                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                        },
-                                                      ),
-                                                    ],
-                                                  ),
-                                                );
-                                              }
-                                            }else {
-                                              return Container(height:200,child: Center(child: CircularProgressIndicator()));
-                                            }
-                                          }
+                                        content:Container(
+                                          height: 200,
+                                            child: Column(
+                                            children: [
+                                              TextField(
+                                                maxLength: 30,
+                                                controller: projectNameController,
+                                              ),
+                                              FlatButton(
+                                                child: Text("Confirm"),
+                                                onPressed: () {
+                                                  _futureProject = postProject(projectNameController.text, myUser.accessToken);
+                                                  Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                  setState(() {
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (_)=>AlertDialog(
+                                                        title: Text("Waiting"),
+                                                        content: FutureBuilder(
+                                                          future: _futureProject,
+                                                          builder: (context,snapshot){
+                                                            if(snapshot.connectionState == ConnectionState.done){
+                                                              if(snapshot.hasData){
+                                                                print("SNAPSHOT HAS DATA");
+                                                                return Container(
+                                                                  height: 200,
+                                                                  child: Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
+                                                                      Text('Project Added'),
+                                                                      FlatButton(
+                                                                        child: Text("Confirm"),
+                                                                        onPressed: () {
+                                                                          createProject(snapshot.data);
+                                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                              }else{
+                                                                return Container(
+                                                                  height: 200,
+                                                                  child: Column(
+                                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                                    children: [
+                                                                      Text('Failed to add project'),
+                                                                      RaisedButton(
+                                                                        color: primaryColor,
+                                                                        child: Text("OK"),
+                                                                        onPressed: () {
+                                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                                        },
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                                );
+                                                              }
+                                                            }else {
+                                                              return Container(height:200,child: Center(child: CircularProgressIndicator()));
+                                                            }
+                                                          }
+                                                        ),
+                                                      )
+                                                    );
+                                                  });
+                                                  projectNameController.clear();
+                                                },
+                                              ),
+                                            ],
+                                          ),
                                         )
                                       ),
                                     );
