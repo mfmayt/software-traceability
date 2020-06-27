@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
-import 'package:frontend/views/main/main_screen.dart';
-
 class FunctionalView extends StatefulWidget {
   final String projectName ;
   FunctionalView({Key key, this.projectName}) : super(key: key);

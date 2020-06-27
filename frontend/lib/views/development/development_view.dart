@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/widgets/project/project.dart';
 
 class DevelopmentView extends StatefulWidget {
   final String projectName;
-  DevelopmentView({Key key, this.projectName}) : super(key: key);
+  final Project myProject;
+  DevelopmentView({Key key, this.projectName, this.myProject}) : super(key: key);
 
   @override
-  _DevelopmentViewState createState() => _DevelopmentViewState(projectName);
+  _DevelopmentViewState createState() => _DevelopmentViewState(projectName,myProject);
 }
 
 class _DevelopmentViewState extends State<DevelopmentView> {
   final String projectName;
-  _DevelopmentViewState(this.projectName);
+  final Project myProject;
+  _DevelopmentViewState(this.projectName, this.myProject);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        centerTitle: true,
+        title: Text(projectName+ " Development View"),
         backgroundColor: Colors.blue,
         actions: <Widget>[
           IconButton(
@@ -25,7 +31,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
               showDialog(
                 context: context,
                 builder: (_)=> AlertDialog(
-                    title: Text("Enter a name for your project"),
+                    title: Text("Enter a name for your class"),
                     content: TextField(
                       maxLength: 30,
                     ),
@@ -61,6 +67,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
             })
         ],
       ),
+      body: Center(child: Text("Hi")),
     );
   }
 }

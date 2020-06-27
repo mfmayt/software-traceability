@@ -1,10 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter/material.dart';
+import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart';
-import 'package:frontend/views/main/main_screen.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:frontend/views/main/main_screen.dart';
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -19,24 +20,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var email ;
   var password;
   var name;
-  Future<User> _futureUser;
 
   final myNavigator = new Navigator();
-  
+
   Future<User> userRegister(name,email,password) async {
     final http.Response response = await http.post(
       baseUrl + '/users',
       body: jsonEncode(<String, String>{
-        'email':email,
+        'email': email,
         'password': password,
         'name': name,
       }),
     );
-
     if (response.statusCode == 200) {
+      print("200");
+      print(response.body);
       return User.fromJson(json.decode(response.body));
     } else {
-      throw Exception('Failed to login');
+      throw Exception('Failed to register');
     }
   }
 
@@ -50,27 +51,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       myIcon = Icon(Icons.visibility_off);
     }
   }
-  User buildUser(_futureUser){
-    var currentUser;
-    FutureBuilder<User>(
-      future:_futureUser,
-      builder: (context,snapshot){
-        if(snapshot.hasData)
-          currentUser = new User(
-          accessToken: snapshot.data.accessToken,
-          id: snapshot.data.id,
-          name: snapshot.data.name,
-          role: snapshot.data.role,
-          email: snapshot.data.email,
-          password: snapshot.data.password
-        );
-      }
-    );
-    return currentUser;
-  }
 
   @override
   Widget build(BuildContext context) {
+    Future<User> _futureUser;
     return Container(
       color: Colors.white,
       child: Center(
@@ -84,7 +68,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   icon: Icon(Icons.arrow_back),
                   onPressed: (){
                     Navigator.pop(context);
-                    //locator<NavigationService>().goBack();
                   },
                 ),
               ],
@@ -96,11 +79,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 maxLength: 40,
                 decoration: InputDecoration(
                   labelText: 'Name',
-                  
                   icon: Icon(Icons.person),
                   hintText: 'John Doe',
-                  //helperText: 'Helper Text',
-                  //counterText: '0 characters',
                   border: const OutlineInputBorder(),
                 ),
                 textAlign: TextAlign.center,
@@ -117,8 +97,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   
                   icon: Icon(Icons.mail),
                   hintText: 'john@doe.com',
-                  //helperText: 'Helper Text',
-                  //counterText: '0 characters',
                   border: const OutlineInputBorder(),
                 ),
                 textAlign: TextAlign.center,
@@ -160,68 +138,78 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             RaisedButton(
               hoverElevation: 10.0,
-                  color: Colors.green,
-                  hoverColor: Colors.green[400],
-                  textColor: Colors.white,
-                  onPressed: (){
-                   
-                    password = myPasswordController.text;
-                    email = myEmailController.text;
-                    name = myNameController.text;
-                    //print(email);
-                    //print (password);
-                    
-                    _futureUser = userRegister(name,email,password);
-                    showDialog(
-                      context: context,
-                      builder: (_)=> AlertDialog(
-                        title: Text("Waiting..."),
-                        content: FutureBuilder<User>(
-                          future:_futureUser,
-                          builder: (context,snapshot){
-                            if(snapshot.connectionState == ConnectionState.done)
-                              if(snapshot.hasData){
-                                var userInfo = buildUser(_futureUser);
-                                Navigator.push(
-                                  context, 
-                                  MaterialPageRoute(
-                                    builder: (context) => MainScreen(userInfo),
-                                    settings: RouteSettings(arguments: snapshot)
-                                  ),
-                                );
-                                return Text('Welcome ${snapshot.data.name}');
-                              }else
-                                return Container(
-                                  height: 200,
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text('Failed to Login'),
-                                      FlatButton(
-                                        child: Text("OK"),
-                                        onPressed: () {
-                                          Navigator.of(context, rootNavigator: true).pop('dialog');
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                );
-                            else {
-                              return Container(height:200,child: Center(child: CircularProgressIndicator()));
+              color: Colors.green,
+              hoverColor: Colors.green[400],
+              textColor: Colors.white,
+              onPressed: (){
+                password = myPasswordController.text;
+                email = myEmailController.text;
+                name = myNameController.text;
+                
+                setState(() {
+                  _futureUser = userRegister(name,email,password);
+                  showDialog(
+                    context: context,
+                    builder: (_)=> AlertDialog(
+                      title: Text("Waiting..."),
+                      content: FutureBuilder<User>(
+                        future:_futureUser,
+                        builder: (context,snapshot){
+                          if(snapshot.connectionState == ConnectionState.done){
+                            if(snapshot.hasData){
+                              return Container(
+                                height: 200,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Welcome ${snapshot.data.name}'),
+                                    RaisedButton(
+                                      color: primaryColor,
+                                      child: Text("Go to your projects"),
+                                      onPressed: () {
+                                        Navigator.push(
+                                        context, 
+                                        MaterialPageRoute(
+                                          builder: (context) => MainScreen(myUser: snapshot.data),
+                                          settings: RouteSettings(arguments: snapshot.data)
+                                        ),
+                                      );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }else{
+                              return Container(
+                                height: 200,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Failed to Register'),
+                                    RaisedButton(
+                                      color: primaryColor,
+                                      child: Text("OK"),
+                                      onPressed: () {
+                                        Navigator.of(context, rootNavigator: true).pop('dialog');
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
                             }
-                            
+                          }else {
+                            return Container(height:200,child: Center(child: CircularProgressIndicator()));
                           }
-                        ),
-                      )
-                    );
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                        builder: (context) => MainScreen(buildUser(_futureUser)),
-                        settings: RouteSettings(arguments: _futureUser)
-                      ),);
-                  },
-                  child: Text("Register",),
+                        }
+                      ),
+                    )
+                  );
+                });
+                myPasswordController.clear();
+                myEmailController.clear();
+                myNameController.clear();
+              },
+              child: Text("Login",),
             )
           ],
         ),
