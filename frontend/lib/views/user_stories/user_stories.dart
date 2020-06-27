@@ -81,7 +81,6 @@ class _UserStoriesState extends State<UserStories> {
   }
 
   _addLink(String from, String to) async {
-    print("ANANNANANANNANA");
     Link l = Link(
       from: from,
       to: to,
@@ -97,8 +96,8 @@ class _UserStoriesState extends State<UserStories> {
     final ScreenArguments args = ModalRoute.of(context).settings.arguments;
     this.projectID = args.projectID;
     this.viewID = args.viewID;
-    Widget _setupAlertDialoadContainer(String from) {
-         
+
+    Widget _setupAlertDialoadContainer(String from) {       
     return Container(
       height: 400.0,
       width: 600.0,
@@ -235,6 +234,19 @@ class _UserStoriesState extends State<UserStories> {
                       );        
                     },
                     icon: Icon(Icons.add),
+                    ),
+                    trailing: IconButton(
+                      onPressed: (){
+                        showDialog( // TODO: should navigate a new screen and show listed components
+                          context: context,
+                          builder: (BuildContext context){
+                            return AlertDialog(
+                              title: Text("Linked Components desc"),
+                            );
+                          },
+                          );
+                      },
+                      icon: Icon(Icons.details),
                     ),
                   title: Text(userStory.description),
                 ),

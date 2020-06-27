@@ -77,3 +77,24 @@ func (l *Links) GetProjectLinks(rw http.ResponseWriter, r *http.Request) {
 
 	err = data.ToJSON(project, rw)
 }
+
+// GetLinkedComponents handles GET requests and returns all linked components
+func (l *Links) GetLinkedComponents(rw http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	id, ok := vars["componentID"]
+
+	if !ok {
+		io.WriteString(rw, `{{"error": "id not found"}}`)
+		return
+	}
+
+	archViews, err := data.FindLinkedComponents(id)
+
+	if err != nil {
+		io.WriteString(rw, `{{"error": "user not found"}}`)
+		return
+	}
+
+	err = data.ToJSON(archViews, rw)
+}
