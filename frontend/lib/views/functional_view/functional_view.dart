@@ -102,6 +102,7 @@ class _FunctionalViewState extends State<FunctionalView> {
   
   var layerNameController = new TextEditingController();
   var componentNameController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final String projectName = currentProject.name;

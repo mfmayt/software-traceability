@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/views/development/development_view.dart';
 import 'package:frontend/views/functional_view/functional_view.dart';
+import 'package:frontend/views/inspect/inspect_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key key}) : super(key: key);
@@ -79,12 +80,7 @@ class _LoginViewState extends State<LoginView> {
                   child: Text("Register",),
                   onLongPress: (){
                     changeColor(Colors.pink);
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                       builder: (context) => FunctionalView()
-                      ),
-                    );
+                    
                   }
                 ),
               ],

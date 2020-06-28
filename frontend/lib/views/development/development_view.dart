@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Models/archview_component.dart';
+import 'package:frontend/helpers/api_manager.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'dart:math' as math;
@@ -15,9 +17,13 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   final Project myProject;
   _DevelopmentViewState(this.myProject);
 
+  List<ArchViewComponent> devComponents2= [];
   List<dynamic> devComponents = [ ["Component1", "Desc", ["Var1","Var2","Var3","Var4"], ["Func1","Func2","Func3"] ] ] ;
   getUserComponents(){
-
+    setState(() {
+      //APIManager.parseArchViewComponents(APIManager.getArchViewComponents(myProject.id, myProject.developmentView)) ;
+      
+    });
   }
   addNewComponent(String name,String desc){
     setState(() {
@@ -142,7 +148,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) => AlertDialog(
-                              
+
                             )
                           );
                         }
