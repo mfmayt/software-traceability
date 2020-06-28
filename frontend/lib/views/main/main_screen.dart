@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 
@@ -27,6 +26,8 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     this.getUserProjects(myUser.id, myUser.accessToken);
+    constants.userTokenConstant = myUser.accessToken;
+    print(constants.userTokenConstant);
   }
 
   List<List<Project>> userProjects = [[]];
@@ -289,7 +290,7 @@ class _MainScreenState extends State<MainScreen> {
                     //padding: const EdgeInsets.all(10),
                     itemCount: userProjects[index].length,
                     itemBuilder: (BuildContext context,int index2){
-                      return ProjectItem(projectName: userProjects[index][index2].name);
+                      return ProjectItem(currentProject: userProjects[index][index2],currentUser: myUser,);
                     },
                   ),
                 );
