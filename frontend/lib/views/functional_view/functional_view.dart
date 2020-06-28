@@ -27,7 +27,7 @@ class _FunctionalViewState extends State<FunctionalView> {
   _FunctionalViewState(this.currentProject);
 
   
-  List<List<dynamic>> layers;
+  List<List<ArchViewComponent>> layers =[];
   String projectID;
   String viewID;
   List<ArchViewComponent> components = [];
@@ -48,22 +48,21 @@ class _FunctionalViewState extends State<FunctionalView> {
   
   dynamic addLayer(String layerName){
     setState(() {
-      layers.add([layerName]);
+      layers.add([]);
     });
   }
    void fetchArchViewComponents(http.Client client) async {
-    layers = [["Root"]];
     functionalComponents = await api.APIManager.getArchViewComponents(projectID, viewID);
     functionalComponents.sort((a, b) => a.level.compareTo(b.level));
-
-    int lastLevel = functionalComponents[0].level;
-    for (var i = 0 ; i < functionalComponents.length ; i++){
-      int newLevel = functionalComponents[i].level;
-      if (lastLevel != newLevel){
-        addLayer(newLevel.toString());
-      }
-      print(functionalComponents[i].level);
-      layers[functionalComponents[i].level].add(functionalComponents[i].description);
+    
+    for (var funcComp in functionalComponents) {
+      if(funcComp.level>=layers.length){
+        layers.add([funcComp]);
+      }else{
+        layers[funcComp.level].add(funcComp);
+      }  
+      
+      
     }
     setState(() => {
     });
@@ -93,14 +92,12 @@ class _FunctionalViewState extends State<FunctionalView> {
 
     bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
     setState(() {
-        this.fetchArchViewComponents(http.Client());
+        if(_){
+          layers[component.level].add(component);
+        }
     });
   }
-  dynamic renameComponent(String newComponentName,int level,int index){
-    setState(() {
-      layers[level][index+1] = newComponentName;
-    });
-  }
+
   _addLink(String from, String to) async {
     Link l = Link(
       from: from,
@@ -109,12 +106,11 @@ class _FunctionalViewState extends State<FunctionalView> {
       kind: "required",
     );
     Link addedLink = await api.APIManager.addLink(l);
-    print(addedLink.id);
+    print("ADDED LINK = ${addedLink.id}");
   }
   
   var layerNameController = new TextEditingController();
   var componentNameController = new TextEditingController();
-  List<bool> _isSelectedList = [false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,];  
   @override
   Widget build(BuildContext context) {
     final String projectName = currentProject.name;
@@ -178,7 +174,7 @@ class _FunctionalViewState extends State<FunctionalView> {
       body: ListView.builder(
         shrinkWrap: true,
         itemCount: layers == null ? 0 : layers.length,
-        itemBuilder: (BuildContext context,int index){
+        itemBuilder: (BuildContext context,int level){
           return Column(
             children: [
               Row(
@@ -191,6 +187,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          /*
                           Text(
                             "${layers[index][0]} Level",
                             style:TextStyle(
@@ -199,8 +196,9 @@ class _FunctionalViewState extends State<FunctionalView> {
                               fontSize: 20
                             )
                           ),
+                          */
                           Text(
-                            "Level $index",
+                            "Level $level",
                             style:TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -219,8 +217,8 @@ class _FunctionalViewState extends State<FunctionalView> {
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           shrinkWrap: true,
-                          itemCount: layers[index].length-1,
-                          itemBuilder: (BuildContext context,int index2){
+                          itemCount: layers[level].length,
+                          itemBuilder: (BuildContext context,int compIndex){
                             return Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
@@ -232,7 +230,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        "${layers[index][index2+1]}",
+                                        layers[level][compIndex].description,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
                                           fontSize: 18, 
@@ -287,7 +285,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                                                           for (var i = 0; i < components.length; i++) {
                                                             if (_isSelectedList[i]==true) {
                                                               //print(components[i].description);
-                                                              //_addLink(currentComponent, components[i].id);
+                                                              _addLink(layers[level][compIndex].id, components[i].id);
                                                             }
                                                           }
                                                           Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -344,7 +342,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                                       FlatButton(
                                         child: Text("Confirm"),
                                         onPressed: () {
-                                          addComponent(componentNameController.text,index);
+                                          addComponent(componentNameController.text,level);
                                           componentNameController.clear();
                                           Navigator.of(context, rootNavigator: true).pop('dialog');
                                         },
