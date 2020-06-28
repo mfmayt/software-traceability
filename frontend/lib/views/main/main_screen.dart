@@ -56,7 +56,7 @@ class _MainScreenState extends State<MainScreen> {
   
   Future<Project>postProject(String projectName,userToken) async{
     final response = await http.post(
-      baseUrl+'/projects',
+      constants.baseUrl+'/projects',
       headers: {
         "Authorization":"Bearer "+userToken
       },
