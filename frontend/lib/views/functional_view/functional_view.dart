@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/widgets/project/project.dart';
 class FunctionalView extends StatefulWidget {
   final String projectName ;
-  FunctionalView({Key key, this.projectName}) : super(key: key);
+  final Project currentProject;
+  FunctionalView({Key key, this.projectName, this.currentProject}) : super(key: key);
 
   @override
   _FunctionalViewState createState() => _FunctionalViewState(projectName);

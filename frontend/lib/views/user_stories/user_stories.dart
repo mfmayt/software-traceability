@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
 import 'package:frontend/Models/arguments.dart';
+import 'package:frontend/widgets/project/project.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/Models/archview_component.dart';
@@ -9,13 +10,16 @@ import 'package:frontend/Models/link.dart';
 import 'package:frontend/helpers/api_manager.dart' as api;
 
 class UserStories extends StatefulWidget {
-  UserStories({Key key}) : super(key: key);
+  final Project currentProject;
+  UserStories({Key key, this.currentProject}) : super(key: key);
 
   @override
-  _UserStoriesState createState() => _UserStoriesState();
+  _UserStoriesState createState() => _UserStoriesState(currentProject);
 }
 
 class _UserStoriesState extends State<UserStories> {
+  final Project currentProject;
+  _UserStoriesState(this.currentProject);
   TextEditingController _controller;
   List<ArchViewComponent> userStories = [];
   ArchView archView;
@@ -26,6 +30,8 @@ class _UserStoriesState extends State<UserStories> {
   String newUserStory;
   String newUserKind;
   List<ArchViewComponent> components = [];
+
+  
 
   void fetchArchViewComponents(http.Client client) async {
     userStories = await api.APIManager.getArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");

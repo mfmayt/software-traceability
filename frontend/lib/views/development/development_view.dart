@@ -123,13 +123,31 @@ class _DevelopmentViewState extends State<DevelopmentView> {
               child: ListView(
                 padding: EdgeInsets.all(10),
                 children: <Widget>[
-                  Text(
-                    devComponents[index][0],
-                    style: TextStyle(
-                      fontSize:25,
-                      fontWeight: FontWeight.bold,
-                      color:Colors.white,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        devComponents[index][0],
+                        style: TextStyle(
+                          fontSize:25,
+                          fontWeight: FontWeight.bold,
+                          color:Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.insert_link,
+                          color: Colors.white,
+                        ), 
+                        onPressed: (){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) => AlertDialog(
+                              
+                            )
+                          );
+                        }
+                      )
+                    ],
                   ),
                   Text(
                     devComponents[index][1],

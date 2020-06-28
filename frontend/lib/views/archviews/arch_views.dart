@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/arguments.dart';
 import 'package:frontend/constants/app_colors.dart';
+import 'package:frontend/views/development/development_view.dart';
+import 'package:frontend/views/functional_view/functional_view.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_view.dart';
 import 'package:frontend/widgets/project/project.dart';
@@ -132,7 +134,25 @@ class _ArchViewListState extends State<ArchViewList> {
                               )
                             
                             ),
-                            onPressed:(){},
+                            onPressed:(){
+                              Navigator.push(
+                                context, 
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    if(archviews[index].kind=="userStory"){
+                                      return UserStories(currentProject: currentProject,);
+                                    }
+                                    else if(archviews[index].kind=="development"){
+                                      return DevelopmentView(myProject: currentProject,);
+
+                                    }else{
+                                      return FunctionalView(currentProject: currentProject,);
+                                    }
+                                    
+                                  }
+                                ),
+                              );
+                            },
                           )
                         : IconButton(
                           iconSize: 100,
