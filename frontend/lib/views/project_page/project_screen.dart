@@ -5,9 +5,13 @@ import 'package:frontend/views/development/development_view.dart';
 import 'package:frontend/views/functional_view/functional_view.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_view.dart';
+import 'package:frontend/widgets/project/project.dart';
+import 'package:frontend/widgets/user/user.dart';
 
 class ProjectScreen extends StatefulWidget {
-  ProjectScreen({Key key}) : super(key: key);
+  final Project currentProject;
+  final User currentUser;
+  ProjectScreen({Key key, this.currentProject, this.currentUser}) : super(key: key);
 
   @override
   _ProjectScreenState createState() => _ProjectScreenState();
@@ -101,13 +105,14 @@ class _ProjectScreenState extends State<ProjectScreen> {
                     textColor: Colors.white,
                     child: Text("Development View"),
                     onPressed: () {
+                      /*
                       Navigator.push(
-                         context, 
-                         MaterialPageRoute(
-                           builder: (context) => DevelopmentView(projectName: projectName,),
-                           settings: RouteSettings(arguments: projectName)
-                         ),
-                       );
+                        context, 
+                        MaterialPageRoute(
+                          builder: (context) => DevelopmentView(projectName: projectName,),
+                          settings: RouteSettings(arguments: projectName)
+                        ),
+                      );*/
                      },
                    ),
                 ),

@@ -4,6 +4,8 @@ import 'package:frontend/Models/arguments.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_view.dart';
+import 'package:frontend/widgets/project/project.dart';
+import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/Models/archview.dart';
@@ -11,13 +13,20 @@ import 'package:frontend/helpers/api_manager.dart' as api;
 import 'package:frontend/views/user_stories/user_stories.dart';
 
 class ArchViewList extends StatefulWidget {
-  ArchViewList({Key key}) : super(key: key);
+  final Project currentProject;
+  final User currentUser;
+  ArchViewList({Key key, this.currentProject, this.currentUser}) : super(key: key);
   @override
-  _ArchViewListState createState() => _ArchViewListState();
+  _ArchViewListState createState() => _ArchViewListState(currentProject,currentUser);
 }
 
 class _ArchViewListState extends State<ArchViewList> {
+  final Project currentProject;
+  final User currentUser;
+  
   List<ArchView> archviews = [];
+
+  _ArchViewListState(this.currentProject, this.currentUser);
 
   void fetchArchViews(http.Client client) async {
     archviews = await api.APIManager.getProjectArchViews("e1c765cd-d8b8-4e64-b04e-25f30785a789", "");
@@ -49,8 +58,8 @@ class _ArchViewListState extends State<ArchViewList> {
 
   @override
   Widget build(BuildContext context) {
-    String projectName = ModalRoute.of(context).settings.arguments;
     return new Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.blue,
         actions: <Widget>[
@@ -88,7 +97,7 @@ class _ArchViewListState extends State<ArchViewList> {
               flex: 1,
               child: Center(
                 child: Text(
-                    "$projectName",
+                    currentProject.name,
                     style: TextStyle(
                       fontSize: 50,
                       color:Colors.black,
@@ -112,8 +121,9 @@ class _ArchViewListState extends State<ArchViewList> {
                         width: 300,
                         child: archviews.length != index 
                         ? RaisedButton(
+                            color: Colors.blue,
                             child: Text(
-                              archviews[index].id,
+                              archviews[index].name,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 18, 
@@ -125,6 +135,7 @@ class _ArchViewListState extends State<ArchViewList> {
                             onPressed:(){},
                           )
                         : IconButton(
+                          iconSize: 100,
                           icon: Icon(Icons.add),
                           onPressed: null)
                           //Image.asset("plus.png", color: Colors.red.withAlpha(123), width: 40, height: 40,)),
