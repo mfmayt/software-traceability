@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/url_constants.dart';
+import 'package:frontend/constants/url_constants.dart' as constants;
+import 'package:frontend/constants/user_constants.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
@@ -26,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<User> userLogin(email,password) async {
     final http.Response response = await http.post(
-      baseUrl + '/login',
+      constants.baseUrl + '/login',
       body: jsonEncode(<String, String>{
         'email': email,
         'password': password,
@@ -168,6 +169,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       color: primaryColor,
                                       child: Text("Go to your projects"),
                                       onPressed: () {
+                                        setState(() {
+                                          constants.userTokenConstant = snapshot.data.accessToken;
+                                          constants.sharedUserId = snapshot.data.id;
+                                        });
                                         Navigator.push(
                                         context, 
                                         MaterialPageRoute(

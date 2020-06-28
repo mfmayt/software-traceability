@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
+import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/login/login_view.dart';
+import 'package:frontend/views/main/main_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:http/http.dart' as http;
 
@@ -131,139 +134,155 @@ class _UserStoriesState extends State<UserStories> {
       ),
     );
   }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.only(left: 20, bottom: 28.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                flex: 2,
-                child: Text(
-                  "As a(n)", 
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.purple,
+    return Scaffold(
+        appBar: AppBar(
+          actions: <Widget>[
+            IconButton(
+              tooltip: "Logout",
+              icon: Icon(Icons.exit_to_app), 
+              onPressed: (){
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context) => LoginView(),
                   ),
-                ),
-              ),
-              Spacer(),
-              Expanded(
-                flex: 2,
-                child: DropdownButton<String>(
-                  hint: Align(alignment: Alignment.topLeft),
-                  value: dropdownValue,
-                  onChanged: (String newValue) async{
-                    if (newValue == "Add new user kind"){
-                      await showDialog<void>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('Type new user kind'),
-                            content: TextField(
-                              controller: _controller,
-                              onSubmitted: (String value) async {
-                                this.newUserKind = value;
-                              }
-                            ),
-                            actions: <Widget>[
-                              FlatButton(
-                                onPressed: () {
-                                  _addNewUserKind();
-                                  Navigator.pop(context);
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          );
-                        }
-                      );
-                    }
-                    setState(() {
-                      dropdownValue = newValue;
-                    });
-                  },
-                  items: choices
-                        .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                  ),
-              ),
-              Spacer(),
-              Expanded(
-                flex: 10,
-                child: TextField(
-                    controller: _controller,
-                    onSubmitted: (String value) async {
-                      this.newUserStory = value;
-                    }
-                  ),
-              ),
-              Spacer(),
-              Spacer(),
-              Expanded(
-                flex: 1,
-                child: IconButton(
-                  onPressed: (){
-                    this._addUserStory();              
-                  },
-                  icon: Icon(Icons.add),
-                ),
-              ),
-            ],
-          ),
+                );
+              })
+          ],
         ),
-        new Expanded(
-          child: ListView.builder(
-            itemBuilder: (BuildContext context, int index) {
-              final userStory = userStories[index];
-
-              return Padding(
-                padding: const EdgeInsets.only(right: 22.0),
-                child: ListTile(
-                  leading: IconButton(
+        body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 20, bottom: 28.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: Text(
+                    "As a(n)", 
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.purple,
+                    ),
+                  ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 3,
+                  child: DropdownButton<String>(
+                    hint: Align(alignment: Alignment.topLeft),
+                    value: dropdownValue,
+                    onChanged: (String newValue) async{
+                      if (newValue == "Add new user kind"){
+                        await showDialog<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Type new user kind'),
+                              content: TextField(
+                                controller: _controller,
+                                onSubmitted: (String value) async {
+                                  this.newUserKind = value;
+                                }
+                              ),
+                              actions: <Widget>[
+                                FlatButton(
+                                  onPressed: () {
+                                    _addNewUserKind();
+                                    Navigator.of(context, rootNavigator: true).pop('dialog');
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          }
+                        );
+                      }
+                      setState(() {
+                        dropdownValue = newValue;
+                      });
+                    },
+                    items: choices
+                          .map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                    ),
+                ),
+                Spacer(),
+                Expanded(
+                  flex: 10,
+                  child: TextField(
+                      controller: _controller,
+                      onSubmitted: (String value) async {
+                        this.newUserStory = value;
+                      }
+                    ),
+                ),
+                Spacer(),
+                Spacer(),
+                Expanded(
+                  flex: 1,
+                  child: IconButton(
                     onPressed: (){
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context){
-                          return AlertDialog(
-                            title: Text("Select from list!"),
-                            content: _setupAlertDialoadContainer(userStory.id),
-                          );
-                        }  
-                      );        
+                      this._addUserStory();              
                     },
                     icon: Icon(Icons.add),
-                    ),
-                    trailing: IconButton(
+                  ),
+                ),
+              ],
+            ),
+          ),
+          new Expanded(
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                final userStory = userStories[index];
+
+                return Padding(
+                  padding: const EdgeInsets.only(right: 22.0),
+                  child: ListTile(
+                    leading: IconButton(
                       onPressed: (){
-                        showDialog( // TODO: should navigate a new screen and show listed components
+                        showDialog(
                           context: context,
                           builder: (BuildContext context){
                             return AlertDialog(
-                              title: Text("Linked Components desc"),
+                              title: Text("Select from list!"),
+                              content: _setupAlertDialoadContainer(userStory.id),
                             );
-                          },
-                          );
+                          }  
+                        );        
                       },
-                      icon: Icon(Icons.details),
-                    ),
-                  title: Text(userStory.description),
-                ),
-              );
-            },
-            itemCount: userStories.length,
+                      icon: Icon(Icons.add),
+                      ),
+                      trailing: IconButton(
+                        onPressed: (){
+                          showDialog( // TODO: should navigate a new screen and show listed components
+                            context: context,
+                            builder: (BuildContext context){
+                              return AlertDialog(
+                                title: Text("Linked Components desc"),
+                              );
+                            },
+                            );
+                        },
+                        icon: Icon(Icons.details),
+                      ),
+                    title: Text(userStory.description),
+                  ),
+                );
+              },
+              itemCount: userStories.length,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
