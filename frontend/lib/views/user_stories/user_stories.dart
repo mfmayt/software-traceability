@@ -155,95 +155,122 @@ class _UserStoriesState extends State<UserStories> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.only(left: 20, bottom: 28.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    "As a(n)", 
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.purple,
+            padding: const EdgeInsets.only(left: 20, bottom: 28.0,right: 20,top: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                border:Border.all(width: 4,color: Colors.black),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Spacer(),
+                  //As an text
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      "As a(n)", 
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.purple,
+                      ),
                     ),
                   ),
-                ),
-                Spacer(),
-                Expanded(
-                  flex: 3,
-                  child: DropdownButton<String>(
-                    hint: Align(alignment: Alignment.topLeft),
-                    value: dropdownValue,
-                    onChanged: (String newValue) async{
-                      if (newValue == "Add new user kind"){
-                        await showDialog<void>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Type new user kind'),
-                              content: TextField(
-                                controller: _controller,
-                                onSubmitted: (String value) async {
-                                  this.newUserKind = value;
-                                }
-                              ),
-                              actions: <Widget>[
-                                FlatButton(
-                                  onPressed: () {
-                                    _addNewUserKind();
-                                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                                  },
-                                  child: const Text('OK'),
+                  Spacer(),
+                  //DropDownButton
+                  Expanded(
+                    flex: 3,
+                    child: DropdownButton<String>(
+                      isExpanded: true,
+                      hint: Align(alignment: Alignment.topLeft),
+                      value: dropdownValue,
+                      underline: Container(
+                        height: 2,
+                        color: Colors.purple,
+                      ),
+                      onChanged: (String newValue) async{
+                        if (newValue == "Add new user kind"){
+                          await showDialog<void>(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Type new user kind'),
+                                content: TextField(
+                                  controller: _controller,
+                                  onSubmitted: (String value) async {
+                                    this.newUserKind = value;
+                                  }
                                 ),
-                              ],
-                            );
-                          }
-                        );
-                      }
-                      setState(() {
-                        dropdownValue = newValue;
-                      });
-                    },
-                    items: choices
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                    ),
-                ),
-                Spacer(),
-                Expanded(
-                  flex: 10,
-                  child: TextField(
-                      controller: _controller,
-                      onSubmitted: (String value) async {
-                        this.newUserStory = value;
-                      }
-                    ),
-                ),
-                Spacer(),
-                Spacer(),
-                Expanded(
-                  flex: 1,
-                  child: IconButton(
-                    onPressed: (){
-                      this._addUserStory();              
-                    },
-                    icon: Icon(Icons.add),
+                                actions: <Widget>[
+                                  FlatButton(
+                                    onPressed: () {
+                                      _addNewUserKind();
+                                      Navigator.of(context, rootNavigator: true).pop('dialog');
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              );
+                            }
+                          );
+                        }
+                        setState(() {
+                          dropdownValue = newValue;
+                        });
+                      },
+                      items: choices
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
                   ),
-                ),
-              ],
+                  Spacer(),
+                  //TextField, input for user stories.
+                  Expanded(
+                    flex: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                      child: TextField(
+                          cursorColor: Colors.purple,
+                          decoration: InputDecoration(
+                            enabledBorder: UnderlineInputBorder(
+                              borderSide:BorderSide(color: Colors.purple,width: 2)
+                            ),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide:BorderSide(color: Colors.purple,width: 2)
+                            )
+                          ),
+                          controller: _controller,
+                          onSubmitted: (String value) async {
+                            this.newUserStory = value;
+                            _controller.clear();
+                          }
+                        ),
+                    ),
+                  ),
+                  Spacer(),
+                  //Add button
+                  Expanded(
+                    flex: 1,
+                    child: IconButton(
+                      onPressed: (){
+                        this._addUserStory();              
+                      },
+                      icon: Icon(Icons.add),
+                    ),
+                  ),
+                  Spacer(),
+                ],
+              ),
             ),
           ),
           new Expanded(
             child: ListView.builder(
               itemBuilder: (BuildContext context, int index) {
                 final userStory = userStories[index];
-
                 return Padding(
                   padding: const EdgeInsets.only(right: 22.0),
                   child: ListTile(
