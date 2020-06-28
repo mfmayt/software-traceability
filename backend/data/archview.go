@@ -69,7 +69,7 @@ type ArchViewComponent struct {
 	VarList []string `json:"variables,omitempty" bson:"omitempty"`
 
 	// Drawing level of the component
-	Level int `json:"level,omitempty" bson:"level,omitempty"`
+	Level int `json:"level" bson:"level,omitmepty"`
 }
 
 // UnmarshalJSON parses from json

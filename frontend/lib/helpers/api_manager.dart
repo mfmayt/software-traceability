@@ -24,12 +24,16 @@ class APIManager{
     return constants.baseUrl + interpolate(endpoint, params: params);
   }
 
+  static String getToken(){
+    return "Bearer " + constants.userTokenConstant;
+  }
+
   static Future<List<ArchView>> getProjectArchViews(String projectID, String viewID) async{
     String url = getRESTEndpoint(archViews, params: {'projectID': projectID, 'viewID': viewID});
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer "+ constants.userTokenConstant,
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );
@@ -42,7 +46,7 @@ class APIManager{
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );
@@ -50,23 +54,33 @@ class APIManager{
   }
 
   static ArchView parseArchView(String responseBody) {
+    ArchView archview = ArchView();
+    if (responseBody == null){
+      return archview;
+    }
     final parsedJSON = jsonDecode(responseBody);
-    ArchView archview = ArchView.fromJson(parsedJSON);
+    archview = ArchView.fromJson(parsedJSON);
     return archview;
   }
 
   static List<ArchView> parseArchViews(String responseBody) {
+    List<ArchView> archviews = [];
+    if (responseBody == null){
+      return archviews;
+    }
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-    List<ArchView> archviews = parsed.map<ArchView>((json) => ArchView.fromJson(json)).toList();
+    archviews = parsed.map<ArchView>((json) => ArchView.fromJson(json)).toList();
     return archviews;
   }
 
   static  Future<List<ArchViewComponent>> getArchViewComponents(String projectID, String viewID) async {
     final String url =  getRESTEndpoint(archViewComponents, params: {'projectID': projectID, 'viewID': viewID, 'componentID': ''});
+    
+    print(url);
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );
@@ -78,16 +92,24 @@ class APIManager{
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );
+    print(response.body);
     return compute(parseArchViewComponents, response.body);
   }
 
   static List<ArchViewComponent> parseArchViewComponents(String responseBody) {
+    List<ArchViewComponent> userStories = [];
+    print(responseBody);
+
+    if (responseBody == null){
+      return userStories;
+    }
+    
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-    List<ArchViewComponent> userStories = parsed.map<ArchViewComponent>((json) => ArchViewComponent.fromJson(json)).toList();
+    userStories = parsed.map<ArchViewComponent>((json) => ArchViewComponent.fromJson(json)).toList();
     print(userStories.length);
     return userStories;
   }
@@ -99,7 +121,7 @@ class APIManager{
     final response = await http.post(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
       body: tmp,
@@ -118,7 +140,7 @@ class APIManager{
     final response = await http.patch(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
       body: body,
@@ -137,7 +159,7 @@ class APIManager{
     final response = await http.post(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
         body: body,
@@ -152,8 +174,12 @@ class APIManager{
   }
 
   static List<Link> parseLinkList(String responseBody) {
+    List<Link> links = [];
+    if (responseBody == null){
+      return links;
+    }
     final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
-    List<Link> links = parsed.map<Link>((json) => Link.fromJson(json)).toList();
+    links = parsed.map<Link>((json) => Link.fromJson(json)).toList();
     print(links.length);
     return links;
   }
@@ -164,7 +190,7 @@ class APIManager{
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: getToken(),
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );

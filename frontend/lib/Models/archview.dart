@@ -13,7 +13,7 @@ class ArchView {
         name: json['name'] as String,
         projectID: json['projectID'] as String,
         kind: json['kind'] as String,
-        userKinds: json["userKinds"] != null ? List.from(json["userKinds"]) : null,
+        userKinds: json["userKinds"] != null ? List.from(json["userKinds"]) : [],
       );
     }
     Map<String, dynamic> toJson(){

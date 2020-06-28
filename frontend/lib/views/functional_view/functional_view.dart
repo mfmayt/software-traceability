@@ -2,35 +2,96 @@ import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/widgets/project/project.dart';
+import 'package:frontend/Models/archview_component.dart';
+import 'package:frontend/Models/archview.dart';
+import 'package:http/http.dart' as http;
+
+import 'package:frontend/Models/link.dart';
+import 'package:frontend/helpers/api_manager.dart' as api;
+
+
 class FunctionalView extends StatefulWidget {
-  final String projectName ;
   final Project currentProject;
-  FunctionalView({Key key, this.projectName, this.currentProject}) : super(key: key);
+  
+  FunctionalView({Key key, this.currentProject}) : super(key: key);
 
   @override
-  _FunctionalViewState createState() => _FunctionalViewState(projectName);
+  _FunctionalViewState createState() => _FunctionalViewState(currentProject);
+
 }
 
 class _FunctionalViewState extends State<FunctionalView> {
-  final String projectName ;
-  _FunctionalViewState(this.projectName);
+  final Project currentProject;
+  _FunctionalViewState(this.currentProject);
+
   
-  List<List<dynamic>> layers ;
+  List<List<dynamic>> layers;
+  String projectID;
+  String viewID;
+  List<ArchViewComponent> components = [];
+  List<ArchViewComponent> functionalComponents = [];
+  ArchView archView;
+
   @override
-  void initState() { 
+  void initState() {
+    this.projectID = currentProject.id;
+    this.viewID = currentProject.functionalView;
+
+    fetchArchViewComponents(http.Client());
+    fetchAllArchViewComponents(http.Client());
+    fetchArchView(http.Client());
+
     super.initState();
-    layers= [["Root",projectName]];
   }
   
   dynamic addLayer(String layerName){
     setState(() {
-      layers.add([layerName,""]);
+      layers.add([layerName]);
+    });
+  }
+   void fetchArchViewComponents(http.Client client) async {
+    layers = [["Root"]];
+    functionalComponents = await api.APIManager.getArchViewComponents(projectID, viewID);
+    functionalComponents.sort((a, b) => a.level.compareTo(b.level));
+
+    int lastLevel = functionalComponents[0].level;
+    for (var i = 0 ; i < functionalComponents.length ; i++){
+      int newLevel = functionalComponents[i].level;
+      if (lastLevel != newLevel){
+        addLayer(newLevel.toString());
+      }
+      print(functionalComponents[i].level);
+      layers[functionalComponents[i].level].add(functionalComponents[i].description);
+    }
+    setState(() => {
     });
   }
 
-  dynamic addComponent(String componentName,int level){
+  void fetchAllArchViewComponents(http.Client client) async {
+    components = await api.APIManager.getAllArchViewComponents(projectID);
+
+    setState(() => {
+    });
+  }
+
+  void fetchArchView(http.Client client) async {
+    archView = await api.APIManager.getArchView(projectID, viewID);
+    setState(() => {
+    });
+  }
+
+  dynamic addComponent(String componentName,int level) async{
+    
+    ArchViewComponent component = ArchViewComponent(
+      projectID: this.projectID, 
+      viewID: this.viewID, 
+      description: componentName,
+      level: level,
+      kind: "functional",);
+
+    bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
     setState(() {
-      layers[level].add(componentName);
+        this.fetchArchViewComponents(http.Client());
     });
   }
   dynamic renameComponent(String newComponentName,int level,int index){
@@ -43,7 +104,8 @@ class _FunctionalViewState extends State<FunctionalView> {
   var componentNameController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final String projectName = ModalRoute.of(context).settings.arguments;
+    final String projectName = currentProject.name;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -103,7 +165,7 @@ class _FunctionalViewState extends State<FunctionalView> {
       ),
       body: ListView.builder(
         shrinkWrap: true,
-        itemCount: layers.length,
+        itemCount: layers == null ? 0 : layers.length,
         itemBuilder: (BuildContext context,int index){
           return Column(
             children: [
