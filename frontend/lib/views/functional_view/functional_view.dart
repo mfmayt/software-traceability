@@ -178,9 +178,8 @@ class _FunctionalViewState extends State<FunctionalView> {
                     width: 180,
                     child: Center(
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          
                           Text(
                             "${layers[index][0]} Level",
                             style:TextStyle(
@@ -189,7 +188,6 @@ class _FunctionalViewState extends State<FunctionalView> {
                               fontSize: 20
                             )
                           ),
-                          
                           Text(
                             "Level $index",
                             style:TextStyle(
