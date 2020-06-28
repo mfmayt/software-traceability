@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
-import 'package:frontend/Models/arguments.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:http/http.dart' as http;
 

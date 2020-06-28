@@ -16,10 +16,11 @@ class _FunctionalViewState extends State<FunctionalView> {
   _FunctionalViewState(this.projectName);
   
   List<List<dynamic>> layers ;
+  
   @override
   void initState() { 
     super.initState();
-    layers= [["Root",projectName]];
+    layers= [ ["Root",projectName] ];
   }
   
   dynamic addLayer(String layerName){
@@ -41,6 +42,7 @@ class _FunctionalViewState extends State<FunctionalView> {
   
   var layerNameController = new TextEditingController();
   var componentNameController = new TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final String projectName = ModalRoute.of(context).settings.arguments;
