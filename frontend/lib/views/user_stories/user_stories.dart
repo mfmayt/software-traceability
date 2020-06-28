@@ -176,7 +176,7 @@ class _UserStoriesState extends State<UserStories> {
                       ),
                     ),
                   ),
-                  Spacer(),
+                  
                   //DropDownButton
                   Expanded(
                     flex: 3,
@@ -230,7 +230,7 @@ class _UserStoriesState extends State<UserStories> {
                   Spacer(),
                   //TextField, input for user stories.
                   Expanded(
-                    flex: 10,
+                    flex: 9,
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
                       child: TextField(
@@ -251,7 +251,7 @@ class _UserStoriesState extends State<UserStories> {
                         ),
                     ),
                   ),
-                  Spacer(),
+                  
                   //Add button
                   Expanded(
                     flex: 1,
@@ -259,7 +259,7 @@ class _UserStoriesState extends State<UserStories> {
                       onPressed: (){
                         this._addUserStory();              
                       },
-                      icon: Icon(Icons.add),
+                      icon: Icon(Icons.add,color: Colors.purple,),
                     ),
                   ),
                   Spacer(),
