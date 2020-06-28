@@ -1,3 +1,5 @@
+import 'dart:html';
+
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
@@ -99,14 +101,23 @@ class _FunctionalViewState extends State<FunctionalView> {
       layers[level][index+1] = newComponentName;
     });
   }
+  _addLink(String from, String to) async {
+    Link l = Link(
+      from: from,
+      to: to,
+      projectID: projectID,
+      kind: "required",
+    );
+    Link addedLink = await api.APIManager.addLink(l);
+    print(addedLink.id);
+  }
   
   var layerNameController = new TextEditingController();
   var componentNameController = new TextEditingController();
-
+  List<bool> _isSelectedList = [false,false,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,];  
   @override
   Widget build(BuildContext context) {
     final String projectName = currentProject.name;
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -233,27 +244,60 @@ class _FunctionalViewState extends State<FunctionalView> {
                                         color: Colors.green,
                                         child: Text("Link"),
                                         onPressed: (){
+                                          
                                           showDialog(
-                                            context: context,
-                                            builder: (_)=> AlertDialog(
-                                              title: Text("Rename this component"),
-                                              content: TextField(
-                                                maxLength: 30,
-                                                controller: componentNameController,
-                                              ),
-                                              actions: [
-                                                FlatButton(
-                                                  child: Text("Confirm"),
-                                                  onPressed: () {
-                                                    renameComponent(componentNameController.text,index,index2);
-                                                    componentNameController.clear();
-                                                    Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                  },
-                                                ),
-                                              ],
-                                              elevation: 24.0,
-                                            ),
                                             barrierDismissible: false,
+                                            context: context,
+                                            builder: (context){
+                                              List<bool> _isSelectedList = [];
+                                              for (var i = 0; i < components.length; i++) {
+                                                _isSelectedList.add(false);
+                                              }
+                                              return StatefulBuilder(
+                                                builder: (context , setState2){
+                                                  return AlertDialog(
+                                                    elevation: 24.0,
+                                                    title: Text("Select components to link"),
+                                                    content: Container(
+                                                      width: 400,
+                                                      child: ListView.builder(
+                                                        itemCount: components.length,
+                                                        itemBuilder: (BuildContext context,int compIndex){
+                                                          return CheckboxListTile(
+                                                            value: _isSelectedList[compIndex],
+                                                            title: Text(components[compIndex].description),
+                                                            onChanged: (bool newValue){
+                                                              setState2(() {
+                                                                _isSelectedList[compIndex] = newValue;
+                                                              });
+                                                              //print(components.length);
+                                                              //print(_isSelectedList.length);
+                                                            },
+                                                            secondary: Icon( components[compIndex].kind == "userStory" ? Icons.people : (components[compIndex].kind == "functional" ? Icons.build : Icons.computer)),
+              
+                                                          );
+                                                        }
+                                                      ),
+                                                    ),
+                                                    actions: [
+                                                      FlatButton(
+                                                        child: Text("Confirm"),
+                                                        onPressed: () {
+                                                          //
+                                                          for (var i = 0; i < components.length; i++) {
+                                                            if (_isSelectedList[i]==true) {
+                                                              //print(components[i].description);
+                                                              //_addLink(currentComponent, components[i].id);
+                                                            }
+                                                          }
+                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                }
+                                              );
+                                            },
                                           );
                                         },
                                       ),
