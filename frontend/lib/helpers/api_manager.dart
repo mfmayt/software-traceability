@@ -130,7 +130,7 @@ class APIManager{
     if (response.statusCode == 200){
       return true;
     }
-    return false;
+    return false; 
   }
 
   static Future<bool> patchArchView(ArchView av, String projectID, String viewID) async{

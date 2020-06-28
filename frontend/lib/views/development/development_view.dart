@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Models/archview.dart';
 import 'package:frontend/Models/archview_component.dart';
-import 'package:frontend/helpers/api_manager.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'dart:math' as math;
-
+import 'package:http/http.dart' as http;
+import 'package:frontend/Models/link.dart';
+import 'package:frontend/helpers/api_manager.dart' as api;
 class DevelopmentView extends StatefulWidget {
   final Project myProject;
   DevelopmentView({Key key, this.myProject}) : super(key: key);
@@ -17,37 +19,121 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   final Project myProject;
   _DevelopmentViewState(this.myProject);
 
-  List<ArchViewComponent> devComponents2= [];
-  List<dynamic> devComponents = [ ["Component1", "Desc", ["Var1","Var2","Var3","Var4"], ["Func1","Func2","Func3"] ] ] ;
-  getUserComponents(){
-    setState(() {
-      //APIManager.parseArchViewComponents(APIManager.getArchViewComponents(myProject.id, myProject.developmentView)) ;
-      
+  List<ArchViewComponent> devComponents= [];
+  List<dynamic> devComponentsCopy =[];
+  List<ArchViewComponent> allComponents = [];
+  List<List<String>> variables = [];
+  List<List<String>> functions = [];
+  List<String> compNames = [];
+  List<bool> isEditable = [];
+  String projectID;
+  String viewID;
+  ArchView archView;
+
+  @override
+  void initState() { 
+    
+    this.projectID = myProject.id;
+    this.viewID = myProject.functionalView;
+
+    fetchArchViewComponents(http.Client());
+    fetchAllArchViewComponents(http.Client());
+    fetchArchView(http.Client());
+    
+    super.initState();
+
+    
+  }
+  //Gango function1
+  void fetchArchViewComponents(http.Client client) async {
+    devComponents = await api.APIManager.getArchViewComponents(projectID, viewID);
+    setState(() => {
+      for (var comp in devComponents) {
+        isEditable.add(true),
+        compNames.add(comp.description),
+        if(comp.variables!=null){
+          variables.add(comp.variables)
+        },
+        if(comp.functions!=null){
+          functions.add(comp.functions)
+        }
+      }
     });
   }
-  addNewComponent(String name,String desc){
-    setState(() {
-      devComponents.add([name,desc,[],[]]);
+  //Gango function2
+  void fetchAllArchViewComponents(http.Client client) async {
+    allComponents = await api.APIManager.getAllArchViewComponents(projectID);
+
+    setState(() => {
     });
   }
-  editComponent(int compIndex, String newCompName,String newCompDesc){
-    setState(() {
-      devComponents[compIndex][0] = newCompName;
-      devComponents[compIndex][1] = newCompDesc;
+  // Gango function3
+  void fetchArchView(http.Client client) async {
+    archView = await api.APIManager.getArchView(projectID, viewID);
+    setState(() => {
     });
   }
+  /*
+  void updateComponent(ArchView archView,int index)async{
+    bool a = await api.APIManager.patchArchView(archView, projectID, viewID);
+    setState(() {
+      if(a){
+        //devComponents[index] = updatedComp;
+      }
+    });
+    
+  }
+  */
+  // Gango function4
+  _addLink(String from, String to) async {
+    Link l = Link(
+      from: from,
+      to: to,
+      projectID: projectID,
+      kind: "required",
+    );
+    Link addedLink = await api.APIManager.addLink(l);
+    print(addedLink.id);
+  }
+
+  dynamic addComponent(int compIndex) async{
+    
+    ArchViewComponent component = ArchViewComponent(
+      projectID: this.projectID, 
+      viewID: this.viewID, 
+      description: compNames[compIndex],
+      variables: variables[compIndex],
+      functions: functions[compIndex],
+      kind: "development",);
+
+    bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
+    setState(() {
+        if(_){
+          devComponents.add(component);
+        }
+    });
+  }
+  
+  
+  editComponent(int compIndex, String newCompName){
+    setState(() {
+      compNames[compIndex] = newCompName;
+    });
+  }
+  
   addVariable(int compIndex,String varName){
     setState(() {
-      devComponents[compIndex][2].add(varName);
+      variables[compIndex].add(varName);
     });
   }
 
   addFunction(int compIndex, String funcName){
     setState(() {
-      devComponents[compIndex][3].add(funcName);
+      functions[compIndex].add(funcName);
     });
   }
-
+  
+  
   var compNameController = new TextEditingController();
   var compDescController = new TextEditingController();
   var varNameController  = new TextEditingController();
@@ -115,8 +201,8 @@ class _DevelopmentViewState extends State<DevelopmentView> {
             crossAxisSpacing: 30
 
           ),
-          itemBuilder: (BuildContext context,int index){
-            return devComponents.length != index 
+          itemBuilder: (BuildContext context,int compIndex){
+            return devComponents.length != compIndex 
             ?Container(
               decoration: BoxDecoration(
                 color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
@@ -132,7 +218,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                   Row(
                     children: [
                       Text(
-                        devComponents[index][0],
+                        devComponents[compIndex].description,
                         style: TextStyle(
                           fontSize:25,
                           fontWeight: FontWeight.bold,
@@ -154,14 +240,6 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         }
                       )
                     ],
-                  ),
-                  Text(
-                    devComponents[index][1],
-                    style: TextStyle(
-                      fontSize:15,
-                      fontWeight: FontWeight.bold,
-                      color:Colors.white,
-                    ),
                   ),
                   Row(
                     children: [
@@ -191,7 +269,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                   color: Colors.blue,
                                   child: Text("Confirm"),
                                   onPressed: (){
-                                    addVariable(index, varNameController.text);
+                                    addVariable(compIndex, varNameController.text);
                                     varNameController.clear();
                                     Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },

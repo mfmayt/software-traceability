@@ -33,7 +33,6 @@ class _FunctionalViewState extends State<FunctionalView> {
   List<ArchViewComponent> components = [];
   List<ArchViewComponent> functionalComponents = [];
   ArchView archView;
-
   @override
   void initState() {
     this.projectID = currentProject.id;
@@ -106,7 +105,7 @@ class _FunctionalViewState extends State<FunctionalView> {
       kind: "required",
     );
     Link addedLink = await api.APIManager.addLink(l);
-    print("ADDED LINK = ${addedLink.id}");
+    print(addedLink.id);
   }
   
   var layerNameController = new TextEditingController();
