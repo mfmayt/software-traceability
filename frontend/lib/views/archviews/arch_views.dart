@@ -29,7 +29,7 @@ class _ArchViewListState extends State<ArchViewList> {
   _ArchViewListState(this.currentProject, this.currentUser);
 
   void fetchArchViews(http.Client client) async {
-    archviews = await api.APIManager.getProjectArchViews("e1c765cd-d8b8-4e64-b04e-25f30785a789", "");
+    archviews = await api.APIManager.getProjectArchViews(currentProject.id, "");
     print(archviews.length);
     setState(() {
     });
@@ -123,7 +123,7 @@ class _ArchViewListState extends State<ArchViewList> {
                         ? RaisedButton(
                             color: Colors.blue,
                             child: Text(
-                              archviews[index].name,
+                              archviews[index].id,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 18, 

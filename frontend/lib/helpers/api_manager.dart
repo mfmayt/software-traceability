@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:frontend/constants/url_constants.dart';
+import 'package:frontend/constants/url_constants.dart' as constants;
 import 'package:http/http.dart' as http;
 
 import 'package:frontend/Models/archview_component.dart';
@@ -19,9 +19,9 @@ class APIManager{
   static const String link = "/projects/{{projectID}}/links/{{linkID}}"; // {GET, POST}
   static const String componentLinks = "/projects/{{projectID}}/components/{{componentID}}/links";
   
-  String accToken = userTokenConstant;
+  
   static String getRESTEndpoint(String endpoint, {Map<String, dynamic> params = const {}}){
-    return baseUrl + interpolate(endpoint, params: params);
+    return constants.baseUrl + interpolate(endpoint, params: params);
   }
 
   static Future<List<ArchView>> getProjectArchViews(String projectID, String viewID) async{
@@ -29,7 +29,7 @@ class APIManager{
     final response = await http.get(
       url,
       headers: {
-        HttpHeaders.authorizationHeader: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1OTQ1NDQzODUsImlhdCI6MTU5MDk0NDM4NSwidXNlcmlkIjoiNWMxNDBlOTEtZWZmMS00ODVmLWI3MWUtNDY4MGEyMDEzNmIxIn0.XhI800q0n_mfjOg1v1_2aub6y5ehnQQno2vvn3__oC0",
+        HttpHeaders.authorizationHeader: "Bearer "+ constants.userTokenConstant,
         HttpHeaders.contentTypeHeader: 'application/json'
         },
     );
