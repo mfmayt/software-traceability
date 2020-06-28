@@ -89,13 +89,13 @@ class _ProjectScreenState extends State<ProjectScreen> {
                     textColor: Colors.white,
                     child: Text("Funcional View"),
                     onPressed: () {
-                      Navigator.push(
-                         context, 
-                         MaterialPageRoute(
-                           builder: (context) => FunctionalView(projectName: projectName,),
-                           settings: RouteSettings(arguments: projectName)
-                         ),
-                       );
+                      // Navigator.push(
+                      //    context, 
+                      //    MaterialPageRoute(
+                      //      builder: (context) => FunctionalView(currentProject: ,),
+                      //      settings: RouteSettings(arguments: projectName)
+                      //    ),
+                      //  );
                      },
                    ),
                 ),

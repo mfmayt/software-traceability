@@ -34,20 +34,20 @@ class _UserStoriesState extends State<UserStories> {
   
 
   void fetchArchViewComponents(http.Client client) async {
-    userStories = await api.APIManager.getArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");
+    userStories = await api.APIManager.getArchViewComponents(projectID, viewID);
     setState(() => {
     });
   }
 
   void fetchAllArchViewComponents(http.Client client) async {
-    components = await api.APIManager.getAllArchViewComponents("e1c765cd-d8b8-4e64-b04e-25f30785a789");
+    components = await api.APIManager.getAllArchViewComponents(projectID);
 
     setState(() => {
     });
   }
 
   void fetchArchView(http.Client client) async {
-    archView = await api.APIManager.getArchView("e1c765cd-d8b8-4e64-b04e-25f30785a789", "04f8ea09-3c2a-4b9e-89b4-d39f766633c8");
+    archView = await api.APIManager.getArchView(projectID, viewID);
     setState(() => {
       choices = []..addAll(archView.userKinds),
       choices.add("Add new user kind"),
@@ -56,6 +56,8 @@ class _UserStoriesState extends State<UserStories> {
   }
   
   @override void initState() {
+    this.projectID = currentProject.id;
+    this.viewID = currentProject.userStory;
     this.fetchArchViewComponents(http.Client());
     this.fetchArchView(http.Client());
     this.fetchAllArchViewComponents(http.Client());
@@ -103,9 +105,6 @@ class _UserStoriesState extends State<UserStories> {
     //this.projectID = args.projectID;
     //this.viewID = args.viewID;
     
-    this.projectID = currentProject.id;
-    this.viewID = currentProject.userStory;
-
     Widget _setupAlertDialoadContainer(String from) {       
     return Container(
       height: 400.0,

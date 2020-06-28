@@ -140,6 +140,16 @@ func AddProject(p Project, owner string) Project {
 	addedArchview, err = AddArchView(*development)
 	p.DevelopmentViewID = addedArchview.ID
 
+	rootFunctionalComponent := &ArchViewComponent{
+		Kind:         "functional",
+		Desctription: p.Name,
+		ViewID:       p.FuntionalViewID,
+		ProjectID:    p.ID,
+		Level:        0,
+	}
+
+	AddArchViewComponent(*rootFunctionalComponent)
+
 	collection := db.DB.Collection(db.ProjectCollectionName)
 	insertResult, err := collection.InsertOne(context.TODO(), p)
 
