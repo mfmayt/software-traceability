@@ -216,44 +216,50 @@ class _FunctionalViewState extends State<FunctionalView> {
                               child: Padding(
                                 padding: const EdgeInsets.all(5.0),
                                 child: Container(
+                                  color: Colors.blue,
                                   height: 140,
                                   width: 150,
-                                  child: RaisedButton(
-                                    color: Colors.blue,
-                                    child: Text(
-                                      "${layers[index][index2+1]}",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        fontSize: 18, 
-                                        fontWeight:FontWeight.w800,
-                                        color: Colors.white
-                                      )
-                                    ),
-                                    onPressed: (){
-                                      showDialog(
-                                        context: context,
-                                        builder: (_)=> AlertDialog(
-                                            title: Text("Rename this component"),
-                                            content: TextField(
-                                              maxLength: 30,
-                                              controller: componentNameController,
-                                            ),
-                                            actions: [
-                                              FlatButton(
-                                                child: Text("Confirm"),
-                                                onPressed: () {
-                                                  renameComponent(componentNameController.text,index,index2);
-                                                  componentNameController.clear();
-                                                  Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                },
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "${layers[index][index2+1]}",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 18, 
+                                          fontWeight:FontWeight.w800,
+                                          color: Colors.white
+                                        )
+                                      ),
+                                      RaisedButton(
+                                        color: Colors.green,
+                                        child: Text("Link"),
+                                        onPressed: (){
+                                          showDialog(
+                                            context: context,
+                                            builder: (_)=> AlertDialog(
+                                              title: Text("Rename this component"),
+                                              content: TextField(
+                                                maxLength: 30,
+                                                controller: componentNameController,
                                               ),
-                                            ],
-                                            elevation: 24.0,
-                                            
-                                        ),
-                                        barrierDismissible: false,
-                                      );
-                                    },
+                                              actions: [
+                                                FlatButton(
+                                                  child: Text("Confirm"),
+                                                  onPressed: () {
+                                                    renameComponent(componentNameController.text,index,index2);
+                                                    componentNameController.clear();
+                                                    Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                  },
+                                                ),
+                                              ],
+                                              elevation: 24.0,
+                                            ),
+                                            barrierDismissible: false,
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
