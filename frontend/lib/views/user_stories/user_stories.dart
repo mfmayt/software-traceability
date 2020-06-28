@@ -20,6 +20,7 @@ class UserStories extends StatefulWidget {
 class _UserStoriesState extends State<UserStories> {
   final Project currentProject;
   _UserStoriesState(this.currentProject);
+  
   TextEditingController _controller;
   List<ArchViewComponent> userStories = [];
   ArchView archView;
@@ -99,9 +100,12 @@ class _UserStoriesState extends State<UserStories> {
 
   @override
   Widget build(BuildContext context) {
-    final ScreenArguments args = ModalRoute.of(context).settings.arguments;
-    this.projectID = args.projectID;
-    this.viewID = args.viewID;
+    //final ScreenArguments args = ModalRoute.of(context).settings.arguments;
+    //this.projectID = args.projectID;
+    //this.viewID = args.viewID;
+    
+    this.projectID = currentProject.id;
+    this.viewID = currentProject.userStory;
 
     Widget _setupAlertDialoadContainer(String from) {       
     return Container(

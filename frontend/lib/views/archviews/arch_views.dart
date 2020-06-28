@@ -125,7 +125,7 @@ class _ArchViewListState extends State<ArchViewList> {
                         ? RaisedButton(
                             color: Colors.blue,
                             child: Text(
-                              archviews[index].id,
+                              archviews[index].name,
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 18, 
@@ -149,7 +149,7 @@ class _ArchViewListState extends State<ArchViewList> {
                                       return FunctionalView(currentProject: currentProject,);
                                     }
                                     
-                                  }
+                                  },
                                 ),
                               );
                             },
