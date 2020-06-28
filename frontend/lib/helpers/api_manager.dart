@@ -18,7 +18,8 @@ class APIManager{
   static const String listArchViewComponents = "/projects/{{projectID}}/components";
   static const String link = "/projects/{{projectID}}/links/{{linkID}}"; // {GET, POST}
   static const String componentLinks = "/projects/{{projectID}}/components/{{componentID}}/links";
-
+  
+  String accToken = userTokenConstant;
   static String getRESTEndpoint(String endpoint, {Map<String, dynamic> params = const {}}){
     return baseUrl + interpolate(endpoint, params: params);
   }

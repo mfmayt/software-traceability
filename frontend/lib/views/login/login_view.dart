@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/views/development/development_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key key}) : super(key: key);
@@ -8,7 +9,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  var myColor = Colors.red;
+  var myColor = Colors.blue;
   changeColor(newColor){
     setState(() {
       myColor = newColor;
@@ -46,6 +47,12 @@ class _LoginViewState extends State<LoginView> {
                   child: Text("Login",),
                   onLongPress: (){
                     changeColor(Colors.purple);
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                       builder: (context) => DevelopmentView()
+                      ),
+                    );
                   },
                 ),
                 Container(
