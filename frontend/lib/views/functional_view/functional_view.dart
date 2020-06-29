@@ -145,7 +145,6 @@ class _FunctionalViewState extends State<FunctionalView> {
                       ),
                     ],
                     elevation: 24.0,
-                    
                 ),
                 barrierDismissible: false,
               );
@@ -229,9 +228,80 @@ class _FunctionalViewState extends State<FunctionalView> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      
+                                      Text(
+                                        layers[level][compIndex].description,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontSize: 18, 
+                                          fontWeight:FontWeight.w800,
+                                          color: Colors.white
+                                        )
+                                      ),
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
+                                          IconButton(
+                                            tooltip: "Link with other components",
+                                            icon: Icon(Icons.add_box),
+                                            onPressed: (){
+                                              
+                                              showDialog(
+                                                barrierDismissible: false,
+                                                context: context,
+                                                builder: (context){
+                                                  List<bool> _isSelectedList = [];
+                                                  for (var i = 0; i < components.length; i++) {
+                                                    _isSelectedList.add(false);
+                                                  }
+                                                  return StatefulBuilder(
+                                                    builder: (context , setState2){
+                                                      return AlertDialog(
+                                                        elevation: 24.0,
+                                                        title: Text("Select components to link"),
+                                                        content: Container(
+                                                          width: 400,
+                                                          child: ListView.builder(
+                                                            itemCount: components.length,
+                                                            itemBuilder: (BuildContext context,int compIndex){
+                                                              return CheckboxListTile(
+                                                                value: _isSelectedList[compIndex],
+                                                                title: Text(components[compIndex].description),
+                                                                onChanged: (bool newValue){
+                                                                  setState2(() {
+                                                                    _isSelectedList[compIndex] = newValue;
+                                                                  });
+                                                                  //print(components.length);
+                                                                  //print(_isSelectedList.length);
+                                                                },
+                                                                secondary: Icon( components[compIndex].kind == "userStory" ? Icons.people : (components[compIndex].kind == "functional" ? Icons.build : Icons.computer)),
+              
+                                                              );
+                                                            }
+                                                          ),
+                                                        ),
+                                                        actions: [
+                                                          FlatButton(
+                                                            child: Text("Confirm"),
+                                                            onPressed: () {
+                                                              //
+                                                              for (var i = 0; i < components.length; i++) {
+                                                                if (_isSelectedList[i]==true) {
+                                                                  //print(components[i].description);
+                                                                  _addLink(layers[level][compIndex].id, components[i].id);
+                                                                }
+                                                              }
+                                                              Navigator.of(context, rootNavigator: true).pop('dialog');
+                                                            },
+                                                          ),
+                                                        ],
+                                                      );
+                                                    }
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          ),
                                           IconButton(
                                             tooltip: "Open linked components",
                                             icon: Icon(Icons.arrow_forward), 
@@ -245,76 +315,6 @@ class _FunctionalViewState extends State<FunctionalView> {
                                             }
                                           ),
                                         ],
-                                      ),
-                                      Text(
-                                        layers[level][compIndex].description,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontSize: 18, 
-                                          fontWeight:FontWeight.w800,
-                                          color: Colors.white
-                                        )
-                                      ),
-                                      RaisedButton(
-                                        color: Colors.green,
-                                        child: Text("Link"),
-                                        onPressed: (){
-                                          
-                                          showDialog(
-                                            barrierDismissible: false,
-                                            context: context,
-                                            builder: (context){
-                                              List<bool> _isSelectedList = [];
-                                              for (var i = 0; i < components.length; i++) {
-                                                _isSelectedList.add(false);
-                                              }
-                                              return StatefulBuilder(
-                                                builder: (context , setState2){
-                                                  return AlertDialog(
-                                                    elevation: 24.0,
-                                                    title: Text("Select components to link"),
-                                                    content: Container(
-                                                      width: 400,
-                                                      child: ListView.builder(
-                                                        itemCount: components.length,
-                                                        itemBuilder: (BuildContext context,int compIndex){
-                                                          return CheckboxListTile(
-                                                            value: _isSelectedList[compIndex],
-                                                            title: Text(components[compIndex].description),
-                                                            onChanged: (bool newValue){
-                                                              setState2(() {
-                                                                _isSelectedList[compIndex] = newValue;
-                                                              });
-                                                              //print(components.length);
-                                                              //print(_isSelectedList.length);
-                                                            },
-                                                            secondary: Icon( components[compIndex].kind == "userStory" ? Icons.people : (components[compIndex].kind == "functional" ? Icons.build : Icons.computer)),
-              
-                                                          );
-                                                        }
-                                                      ),
-                                                    ),
-                                                    actions: [
-                                                      FlatButton(
-                                                        child: Text("Confirm"),
-                                                        onPressed: () {
-                                                          //
-                                                          for (var i = 0; i < components.length; i++) {
-                                                            if (_isSelectedList[i]==true) {
-                                                              //print(components[i].description);
-                                                              _addLink(layers[level][compIndex].id, components[i].id);
-                                                            }
-                                                          }
-                                                          Navigator.of(context, rootNavigator: true).pop('dialog');
-                                                        },
-                                                      ),
-                                                    ],
-                                                  );
-                                                }
-                                              );
-                                            },
-                                          );
-                                        },
                                       ),
                                     ],
                                   ),
