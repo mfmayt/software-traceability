@@ -1,0 +1,40 @@
+As a developer, I want - so that -.
+As a developer, I want to know architecture side.
+As a developer, I want to know why I'm coding this snippet so that I can empathy.
+As a developer, I want to navigate between components of the project.
+As a developer, I want to inspect project so that I understand better.
+As a developer, I want to inspect project so that I ask my questions to right person.
+As a developer, I want to inspect project so that I find some mistakes about project.
+As a developer, I want to inspect project so that I comment on project's appropriate department.
+As a developer, I want to see the design process so that I understand better.
+As a developer, I want to inspect project so that I understand better.
+As a developer, I want to trace feature from user stories to development view.
+??As a developer, I want to navigate from my code to project architecture directly.
+As a developer, I want to login by my company email.
+As a developer, I want to login by personal email.
+As a developer, I want to login by GitHub account.
+As a developer, I want to annotate architecture components.
+As a developer, I want to share views as Image/svg format.
+As a developer, I want to see linked components in a screen.
+
+
+As a software architect, I want - so that -.
+As a software architect, I want to annotate architecture components.
+As a software architect, I want to link components in a view.
+As a software architect, I want to link components between different views.
+As a software architect, I want to link components' fields with others.
+As a software architect, I want to create functional view.
+As a software architect, I want to create development view.
+As a software architect, I want to list user stories.
+As a software architect, I want to link user stories with other views.
+As a software architect, I want to get help while linking.
+As a software architect, I want to see linked components in a screen.
+As a software architect, I want to select various linking options on components.
+As a software architect, I want to see a list of my projects.
+As a software architect, I want to edit my work.
+As a software architect, I want to share my work with colleagues.
+
+As a manager, I want - so that -.
+As a manager, I want to manage user roles.
+As a manager, I want to inspect project.
+
