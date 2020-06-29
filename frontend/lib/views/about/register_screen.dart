@@ -215,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 myEmailController.clear();
                 myNameController.clear();
               },
-              child: Text("Login",),
+              child: Text("Register",),
             )
           ],
         ),
