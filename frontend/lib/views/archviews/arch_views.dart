@@ -118,7 +118,10 @@ class _ArchViewListState extends State<ArchViewList> {
                     child: Padding(
                       padding: const EdgeInsets.all(18.0),
                       child: Container(
-                        color: primaryColor,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: primaryColor,
+                        ),
                         height: 280,
                         width: 300,
                         child: archviews.length != index 
