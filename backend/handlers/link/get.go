@@ -91,7 +91,7 @@ func (l *Links) GetLinkedComponents(rw http.ResponseWriter, r *http.Request) {
 
 	archViews, err := data.FindLinkedComponents(id)
 
-	if err != nil {
+	if err != nil || archViews == nil {
 		io.WriteString(rw, `{{"error": "user not found"}}`)
 		return
 	}

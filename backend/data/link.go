@@ -171,6 +171,9 @@ func FindLinkedComponents(id string) ([]ArchViewComponent, error) {
 			result = append(result, elem.From)
 		}
 	}
+	if len(result) < 1 {
+		return ret, err
+	}
 	filter = bson.M{"id": bson.M{"$in": result}}
 	cur, err = componentCollection.Find(context.TODO(), filter)
 

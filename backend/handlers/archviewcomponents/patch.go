@@ -24,7 +24,7 @@ func (ac *ArchViewComponents) UpdateArchViewComponent(rw http.ResponseWriter, r 
 		return
 	}
 
-	component, err := data.FindProjectByID(id)
+	component, err := data.FindArchViewComponentByID(id)
 
 	if err != nil {
 		http.Error(rw, `{{"error": "component view not found"}}`, http.StatusNotFound)
