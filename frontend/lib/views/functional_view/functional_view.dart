@@ -361,6 +361,10 @@ class _FunctionalViewState extends State<FunctionalView> {
                                         onPressed: () {
                                           addComponent(componentNameController.text,level);
                                           componentNameController.clear();
+                                          setState(() {
+                                            this.fetchAllArchViewComponents(http.Client());
+                                          });
+                                          
                                           Navigator.of(context, rootNavigator: true).pop('dialog');
                                         },
                                       ),
