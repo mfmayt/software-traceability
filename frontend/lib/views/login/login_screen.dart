@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/constants/url_constants.dart' as constants;
-import 'package:frontend/constants/user_constants.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 import 'dart:ui';
@@ -35,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (response.statusCode == 200) {
+      print(response.body);
       return User.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to login');
@@ -158,6 +158,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         future:_futureUser,
                         builder: (context,snapshot){
                           if(snapshot.connectionState == ConnectionState.done){
+                            
                             if(snapshot.hasData){
                               return Container(
                                 height: 200,

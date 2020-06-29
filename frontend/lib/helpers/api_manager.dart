@@ -25,6 +25,7 @@ class APIManager{
   }
 
   static String getToken(){
+    print(constants.userTokenConstant);
     return "Bearer " + constants.userTokenConstant;
   }
 

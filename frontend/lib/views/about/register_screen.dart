@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:frontend/constants/app_colors.dart';
-import 'package:frontend/constants/url_constants.dart';
 import 'package:frontend/widgets/user/user.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:frontend/views/main/main_screen.dart';
+
+import 'package:frontend/constants/url_constants.dart' as constants;
 class RegisterScreen extends StatefulWidget {
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -25,7 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<User> userRegister(name,email,password) async {
     final http.Response response = await http.post(
-      baseUrl + '/users',
+      constants.baseUrl + '/users',
       body: jsonEncode(<String, String>{
         'email': email,
         'password': password,
@@ -156,6 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         future:_futureUser,
                         builder: (context,snapshot){
                           if(snapshot.connectionState == ConnectionState.done){
+                            print(snapshot.hasData);
                             if(snapshot.hasData){
                               return Container(
                                 height: 200,
@@ -167,6 +169,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       color: primaryColor,
                                       child: Text("Go to your projects"),
                                       onPressed: () {
+                                        setState(() {
+                                          constants.userTokenConstant = snapshot.data.accessToken;
+                                          constants.sharedUserId = snapshot.data.id;
+                                        });
                                         Navigator.push(
                                         context, 
                                         MaterialPageRoute(
@@ -209,7 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 myEmailController.clear();
                 myNameController.clear();
               },
-              child: Text("Login",),
+              child: Text("Register",),
             )
           ],
         ),

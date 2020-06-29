@@ -27,13 +27,13 @@ class CourseDetails extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'SOFTWARE TRACEABILITY',
+                'SOFTWARE TRACEABILITY TOOL',
                 style: TextStyle(fontWeight:FontWeight.w800,height: 0.9,fontSize: titleSize),
                 textAlign: textAlignment,  
                 ),
               SizedBox(height: 30,),
               Text(
-                'Software Traceability is really important.',
+                'Track your development process',
                 style: TextStyle(fontSize: descriptionSize, height:1.7),
                 textAlign: textAlignment,
               )
