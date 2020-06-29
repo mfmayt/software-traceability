@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
 import 'package:frontend/Models/archview_component.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/inspect/inspect_view.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
@@ -123,7 +124,10 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   editComponent(int compIndex, String newCompName){
     setState(() {
-      
+      devComponents[compIndex].description=newCompName;
+
+      updateComponent(devComponents[compIndex], compIndex);
+      /*
       if(devComponents[compIndex].variables==null&&devComponents[compIndex].functions==null){
         ArchViewComponent updatedComponent = ArchViewComponent(
           projectID: this.projectID,
@@ -164,6 +168,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);        
       }
+      */
       
       
       //compNames[compIndex] = newCompName;
@@ -172,6 +177,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   addVariable(int compIndex,String varName){
     setState(() {
+      devComponents[compIndex].variables +=[varName];
+      updateComponent(devComponents[compIndex],compIndex);
+      /*
       devComponents[compIndex].variables.add(varName);
       if(devComponents[compIndex].functions==null){
         ArchViewComponent updatedComponent = ArchViewComponent(
@@ -193,11 +201,15 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);
       }
+      */
     });
   }
 
   addFunction(int compIndex, String funcName){
     setState(() {
+      devComponents[compIndex].functions += [funcName];
+      updateComponent(devComponents[compIndex],compIndex);
+      /*
       devComponents[compIndex].functions.add(funcName);
       if(devComponents[compIndex].variables == null){
         devComponents[compIndex].variables = [];
@@ -220,6 +232,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);
       }
+      */
     });
   }
   
@@ -295,9 +308,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
             return devComponents.length != compIndex 
             ?Container(
               decoration: BoxDecoration(
-                color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+                color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.6),
                 border: Border.all(
-                  color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+                  color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.8),
                   width: 4,
                 ),
                 borderRadius: BorderRadius.circular(8)
@@ -316,8 +329,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         ),
                       ),
                       IconButton(
+                        tooltip: "Add Link",
                         icon: Icon(
-                          Icons.insert_link,
+                          Icons.add_to_photos,
                           color: Colors.white,
                         ), 
                         onPressed: (){
@@ -374,6 +388,19 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                 }
                               );
                             },
+                          );
+                        }
+                      ),
+                      Expanded(child: Container()),
+                      IconButton(
+                        tooltip: "Open linked components",
+                        icon: Icon(Icons.arrow_forward), 
+                        onPressed: (){
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context) =>InspectView(currentComponent: devComponents[compIndex],currentProject: myProject,),
+                            ),
                           );
                         }
                       )
@@ -619,11 +646,13 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                 controller: compNameController,
                                 maxLength: 30,
                               ),
+                              /*
                               Text("Description : "),
                               TextField(
                                 controller: compDescController,
                                 maxLength: 150,
                               ),
+                              */
                             ]
                           ),
                         ),

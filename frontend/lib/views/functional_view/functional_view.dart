@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/inspect/inspect_view.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:frontend/Models/archview_component.dart';
 import 'package:frontend/Models/archview.dart';
@@ -179,7 +180,7 @@ class _FunctionalViewState extends State<FunctionalView> {
               Row(
                 children: [
                   Container(
-                    color: Colors.amber,
+                    color: Colors.amber.withOpacity(0.6),
                     height: 150,
                     width: 180,
                     child: Center(
@@ -211,7 +212,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                   Expanded(
                     child: Container(
                       height: 150,
-                      color: Colors.purple,
+                      color: Colors.white,
                       child: Center(
                         child: ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -228,6 +229,23 @@ class _FunctionalViewState extends State<FunctionalView> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            tooltip: "Open linked components",
+                                            icon: Icon(Icons.arrow_forward), 
+                                            onPressed: (){
+                                              Navigator.push(
+                                                context, 
+                                                MaterialPageRoute(
+                                                  builder: (context) =>InspectView(currentComponent: layers[level][compIndex],currentProject: currentProject,),
+                                                ),
+                                              );
+                                            }
+                                          ),
+                                        ],
+                                      ),
                                       Text(
                                         layers[level][compIndex].description,
                                         textAlign: TextAlign.center,
@@ -309,7 +327,7 @@ class _FunctionalViewState extends State<FunctionalView> {
                     ),
                   ),
                   Container(
-                    color: Colors.amber,
+                    color: Colors.amber.withOpacity(0.6),
                     height: 150,
                     width: 180,
                     child: Center(

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/inspect/inspect_view.dart';
 import 'package:frontend/views/login/login_view.dart';
 import 'package:frontend/views/main/main_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
@@ -23,7 +24,7 @@ class _UserStoriesState extends State<UserStories> {
   final Project currentProject;
   _UserStoriesState(this.currentProject);
   
-  TextEditingController _controller;
+  TextEditingController _controller = new TextEditingController();
   List<ArchViewComponent> userStories = [];
   ArchView archView;
   List<String> choices = [''];
@@ -33,7 +34,7 @@ class _UserStoriesState extends State<UserStories> {
   String newUserStory;
   String newUserKind;
   List<ArchViewComponent> components = [];
-
+  List<String> vowels =["a", "e", "i", "o", "u"];
   
 
   void fetchArchViewComponents(http.Client client) async {
@@ -108,32 +109,6 @@ class _UserStoriesState extends State<UserStories> {
     //this.projectID = args.projectID;
     //this.viewID = args.viewID;
     
-    Widget _setupAlertDialoadContainer(String from) {       
-    return Container(
-      height: 400.0,
-      width: 600.0,
-      child: Stack(
-        overflow: Overflow.visible,
-        children: <Widget>[ 
-          ListView.builder(
-          scrollDirection: Axis.vertical,
-          itemCount: components.length,
-          itemBuilder: (BuildContext context, int index){
-            final component = components[index];
-          
-            return ListTile(
-              title: Text(component.description),
-              onTap: ()=>{
-                   _addLink(from, component.id)
-                },
-              leading: Icon( component.kind == "userStory" ? Icons.people : (component.kind == "functional" ? Icons.build : Icons.computer)),
-            );
-          },
-        ),
-        ]
-      ),
-    );
-  }
     return Scaffold(
         appBar: AppBar(
           actions: <Widget>[
@@ -158,7 +133,7 @@ class _UserStoriesState extends State<UserStories> {
             padding: const EdgeInsets.only(left: 20, bottom: 28.0,right: 20,top: 10),
             child: Container(
               decoration: BoxDecoration(
-                border:Border.all(width: 4,color: Colors.black),
+                border:Border.all(width: 4,color: Colors.black.withOpacity(0.3)),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -197,9 +172,9 @@ class _UserStoriesState extends State<UserStories> {
                                 title: const Text('Type new user kind'),
                                 content: TextField(
                                   controller: _controller,
-                                  onSubmitted: (String value) async {
+                                  onChanged: (String value) async {
                                     this.newUserKind = value;
-                                  }
+                                  },
                                 ),
                                 actions: <Widget>[
                                   FlatButton(
@@ -244,9 +219,8 @@ class _UserStoriesState extends State<UserStories> {
                             )
                           ),
                           controller: _controller,
-                          onSubmitted: (String value) async {
+                          onChanged: (String value) async {
                             this.newUserStory = value;
-                            _controller.clear();
                           }
                         ),
                     ),
@@ -257,7 +231,8 @@ class _UserStoriesState extends State<UserStories> {
                     flex: 1,
                     child: IconButton(
                       onPressed: (){
-                        this._addUserStory();              
+                        this._addUserStory();
+                        _controller.clear();          
                       },
                       icon: Icon(Icons.add,color: Colors.purple,),
                     ),
@@ -278,31 +253,75 @@ class _UserStoriesState extends State<UserStories> {
                     leading: IconButton(
                       onPressed: (){
                         showDialog(
-                          context: context,
-                          builder: (BuildContext context){
-                            return AlertDialog(
-                              title: Text("Select from list!"),
-                              content: _setupAlertDialoadContainer(userStory.id),
-                            );
-                          }  
-                        );        
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context){
+                              List<bool> _isSelectedList = [];
+                              for (var i = 0; i < components.length; i++) {
+                                _isSelectedList.add(false);
+                              }
+                              return StatefulBuilder(
+                                builder: (context , setState2){
+                                  return AlertDialog(
+                                    elevation: 24.0,
+                                    title: Text("Select components to link"),
+                                    content: Container(
+                                      width: 400,
+                                      child: ListView.builder(
+                                        itemCount: components.length,
+                                        itemBuilder: (BuildContext context,int compIndex2){
+                                          return CheckboxListTile(
+                                            value: _isSelectedList[compIndex2],
+                                            title: Text(components[compIndex2].description),
+                                            onChanged: (bool newValue){
+                                              setState2(() {
+                                                _isSelectedList[compIndex2] = newValue;
+                                              });
+                                              //print(components.length);
+                                              //print(_isSelectedList.length);
+                                            },
+                                            secondary: Icon( components[compIndex2].kind == "userStory" ? Icons.people : (components[compIndex2].kind == "functional" ? Icons.build : Icons.computer)),
+
+                                          );
+                                        }
+                                      ),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        child: Text("Confirm"),
+                                        onPressed: () {
+                                          //
+                                          for (var i = 0; i < components.length; i++) {
+                                            if (_isSelectedList[i]==true) {
+                                              //print(components[i].description);
+                                              _addLink(userStory.id, components[i].id);
+                                            }
+                                          }
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                }
+                              );
+                            },
+                          );        
                       },
                       icon: Icon(Icons.add),
                       ),
                       trailing: IconButton(
+                        tooltip: "Open Linked Components",
                         onPressed: (){
-                          showDialog( // TODO: should navigate a new screen and show listed components
-                            context: context,
-                            builder: (BuildContext context){
-                              return AlertDialog(
-                                title: Text("Linked Components desc"),
-                              );
-                            },
-                            );
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context) =>InspectView(currentComponent: userStory,currentProject: currentProject,),
+                            ),
+                          );
                         },
                         icon: Icon(Icons.details),
                       ),
-                    title: Text(userStory.description),
+                    title: Text("As "+ (vowels.contains(userStory.userKind[0])?"an ":"a ") + userStory.userKind + ", " + userStory.description),
                   ),
                 );
               },
