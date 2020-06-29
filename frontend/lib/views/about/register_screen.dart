@@ -157,6 +157,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         future:_futureUser,
                         builder: (context,snapshot){
                           if(snapshot.connectionState == ConnectionState.done){
+                            print(snapshot.hasData);
                             if(snapshot.hasData){
                               return Container(
                                 height: 200,
