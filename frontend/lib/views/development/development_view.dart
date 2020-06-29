@@ -123,7 +123,10 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   editComponent(int compIndex, String newCompName){
     setState(() {
-      
+      devComponents[compIndex].description=newCompName;
+
+      updateComponent(devComponents[compIndex], compIndex);
+      /*
       if(devComponents[compIndex].variables==null&&devComponents[compIndex].functions==null){
         ArchViewComponent updatedComponent = ArchViewComponent(
           projectID: this.projectID,
@@ -164,6 +167,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);        
       }
+      */
       
       
       //compNames[compIndex] = newCompName;
@@ -172,6 +176,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   addVariable(int compIndex,String varName){
     setState(() {
+      devComponents[compIndex].variables +=[varName];
+      updateComponent(devComponents[compIndex],compIndex);
+      /*
       devComponents[compIndex].variables.add(varName);
       if(devComponents[compIndex].functions==null){
         ArchViewComponent updatedComponent = ArchViewComponent(
@@ -193,11 +200,15 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);
       }
+      */
     });
   }
 
   addFunction(int compIndex, String funcName){
     setState(() {
+      devComponents[compIndex].functions += [funcName];
+      updateComponent(devComponents[compIndex],compIndex);
+      /*
       devComponents[compIndex].functions.add(funcName);
       if(devComponents[compIndex].variables == null){
         devComponents[compIndex].variables = [];
@@ -220,6 +231,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
         );
         updateComponent(updatedComponent, compIndex);
       }
+      */
     });
   }
   
