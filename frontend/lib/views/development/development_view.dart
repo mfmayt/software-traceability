@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
 import 'package:frontend/Models/archview_component.dart';
 import 'package:frontend/views/home/home_view.dart';
+import 'package:frontend/views/inspect/inspect_view.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
@@ -328,8 +329,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         ),
                       ),
                       IconButton(
+                        tooltip: "Add Link",
                         icon: Icon(
-                          Icons.insert_link,
+                          Icons.add_to_photos,
                           color: Colors.white,
                         ), 
                         onPressed: (){
@@ -388,7 +390,19 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                             },
                           );
                         }
-                      )
+                      ),
+                      Expanded(child: Container()),
+                      IconButton(
+                        tooltip: "Open linked components",
+                        icon: Icon(Icons.arrow_forward), 
+                        onPressed: (){
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context) =>InspectView(currentComponent: devComponents[compIndex],currentProject: myProject,),
+                            ),
+                          );
+                        })
                     ],
                   ),
                   Row(
@@ -631,11 +645,13 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                 controller: compNameController,
                                 maxLength: 30,
                               ),
+                              /*
                               Text("Description : "),
                               TextField(
                                 controller: compDescController,
                                 maxLength: 150,
                               ),
+                              */
                             ]
                           ),
                         ),
