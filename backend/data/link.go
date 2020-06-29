@@ -137,6 +137,7 @@ func FindLinkByID(id string) (Link, error) {
 	return resultLink, err
 }
 
+// FindLinkedComponents returns list of linked componenets
 func FindLinkedComponents(id string) ([]ArchViewComponent, error) {
 	linkCollection := db.DB.Collection(db.LinkCollectionName)
 	componentCollection := db.DB.Collection(db.ArchViewComponentCollectionName)
