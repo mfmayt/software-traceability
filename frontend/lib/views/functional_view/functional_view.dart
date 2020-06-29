@@ -267,7 +267,9 @@ class _FunctionalViewState extends State<FunctionalView> {
                                                             itemBuilder: (BuildContext context,int compIndex){
                                                               return CheckboxListTile(
                                                                 value: _isSelectedList[compIndex],
-                                                                title: Text(components[compIndex].description),
+                                                                title: (components[compIndex].kind!="userStory")
+                                                                ?Text(components[compIndex].description)
+                                                                :Text("As a "+components[compIndex].userKind+", "+ components[compIndex].description),
                                                                 onChanged: (bool newValue){
                                                                   setState2(() {
                                                                     _isSelectedList[compIndex] = newValue;

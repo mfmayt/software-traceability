@@ -130,7 +130,7 @@ class _InspectViewState extends State<InspectView> {
                             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 1,
                               mainAxisSpacing: 10,
-                              childAspectRatio: 10,
+                              childAspectRatio: 8,
                               crossAxisSpacing: 10,
                             ),
                             padding: EdgeInsets.all(10),

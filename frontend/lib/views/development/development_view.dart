@@ -106,11 +106,8 @@ class _DevelopmentViewState extends State<DevelopmentView> {
       projectID: this.projectID, 
       viewID: this.viewID, 
       description: compDesc,
-      /*
-      description: compNames[compIndex],
-      variables: variables[compIndex],
-      functions: functions[compIndex],
-      */
+      variables: [],
+      functions: [],
       kind: "development",);
 
     bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
@@ -177,7 +174,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   addVariable(int compIndex,String varName){
     setState(() {
-      devComponents[compIndex].variables +=[varName];
+      
+      devComponents[compIndex].variables += [varName];
+      
       updateComponent(devComponents[compIndex],compIndex);
       /*
       devComponents[compIndex].variables.add(varName);
@@ -498,7 +497,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                         itemBuilder: (BuildContext context,int compIndex2){
                                           return CheckboxListTile(
                                             value: _isSelectedList[compIndex2],
-                                            title: Text(allComponents[compIndex2].description),
+                                            title: (allComponents[compIndex2].kind!="userStory")
+                                              ?Text(allComponents[compIndex2].description)
+                                              :Text("As a "+allComponents[compIndex2].userKind+", "+ allComponents[compIndex2].description),
                                             onChanged: (bool newValue){
                                               setState2(() {
                                                 _isSelectedList[compIndex2] = newValue;
