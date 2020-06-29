@@ -179,6 +179,7 @@ class _UserStoriesState extends State<UserStories> {
                                     onPressed: () {
                                       _addNewUserKind();
                                       Navigator.of(context, rootNavigator: true).pop('dialog');
+                                      _controller.clear();
                                     },
                                     child: const Text('OK'),
                                   ),
