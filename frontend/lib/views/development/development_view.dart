@@ -318,93 +318,13 @@ class _DevelopmentViewState extends State<DevelopmentView> {
               child: ListView(
                 padding: EdgeInsets.all(10),
                 children: <Widget>[
-                  Row(
-                    children: [
-                      Text(
-                        devComponents[compIndex].description,
-                        style: TextStyle(
-                          fontSize:25,
-                          fontWeight: FontWeight.bold,
-                          color:Colors.white,
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: "Add Link",
-                        icon: Icon(
-                          Icons.add_to_photos,
-                          color: Colors.white,
-                        ), 
-                        onPressed: (){
-                          showDialog(
-                            barrierDismissible: false,
-                            context: context,
-                            builder: (context){
-                              List<bool> _isSelectedList = [];
-                              for (var i = 0; i < allComponents.length; i++) {
-                                _isSelectedList.add(false);
-                              }
-                              return StatefulBuilder(
-                                builder: (context , setState2){
-                                  return AlertDialog(
-                                    elevation: 24.0,
-                                    title: Text("Select components to link"),
-                                    content: Container(
-                                      width: 400,
-                                      child: ListView.builder(
-                                        itemCount: allComponents.length,
-                                        itemBuilder: (BuildContext context,int compIndex2){
-                                          return CheckboxListTile(
-                                            value: _isSelectedList[compIndex2],
-                                            title: Text(allComponents[compIndex2].description),
-                                            onChanged: (bool newValue){
-                                              setState2(() {
-                                                _isSelectedList[compIndex2] = newValue;
-                                              });
-                                              //print(components.length);
-                                              //print(_isSelectedList.length);
-                                            },
-                                            secondary: Icon( allComponents[compIndex2].kind == "userStory" ? Icons.people : (allComponents[compIndex2].kind == "functional" ? Icons.build : Icons.computer)),
-
-                                          );
-                                        }
-                                      ),
-                                    ),
-                                    actions: [
-                                      FlatButton(
-                                        child: Text("Confirm"),
-                                        onPressed: () {
-                                          //
-                                          for (var i = 0; i < allComponents.length; i++) {
-                                            if (_isSelectedList[i]==true) {
-                                              //print(components[i].description);
-                                              _addLink(devComponents[compIndex].id, allComponents[i].id);
-                                            }
-                                          }
-                                          Navigator.of(context, rootNavigator: true).pop('dialog');
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                }
-                              );
-                            },
-                          );
-                        }
-                      ),
-                      Expanded(child: Container()),
-                      IconButton(
-                        tooltip: "Open linked components",
-                        icon: Icon(Icons.arrow_forward), 
-                        onPressed: (){
-                          Navigator.push(
-                            context, 
-                            MaterialPageRoute(
-                              builder: (context) =>InspectView(currentComponent: devComponents[compIndex],currentProject: myProject,),
-                            ),
-                          );
-                        }
-                      )
-                    ],
+                  Text(
+                    devComponents[compIndex].description,
+                    style: TextStyle(
+                      fontSize:25,
+                      fontWeight: FontWeight.bold,
+                      color:Colors.white,
+                    ),
                   ),
                   Row(
                     children: [
@@ -552,6 +472,69 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       IconButton(
+                        tooltip: "Add Link",
+                        icon: Icon(
+                          Icons.add_to_photos,
+                          color: Colors.white,
+                        ), 
+                        onPressed: (){
+                          showDialog(
+                            barrierDismissible: false,
+                            context: context,
+                            builder: (context){
+                              List<bool> _isSelectedList = [];
+                              for (var i = 0; i < allComponents.length; i++) {
+                                _isSelectedList.add(false);
+                              }
+                              return StatefulBuilder(
+                                builder: (context , setState2){
+                                  return AlertDialog(
+                                    elevation: 24.0,
+                                    title: Text("Select components to link"),
+                                    content: Container(
+                                      width: 400,
+                                      child: ListView.builder(
+                                        itemCount: allComponents.length,
+                                        itemBuilder: (BuildContext context,int compIndex2){
+                                          return CheckboxListTile(
+                                            value: _isSelectedList[compIndex2],
+                                            title: Text(allComponents[compIndex2].description),
+                                            onChanged: (bool newValue){
+                                              setState2(() {
+                                                _isSelectedList[compIndex2] = newValue;
+                                              });
+                                              //print(components.length);
+                                              //print(_isSelectedList.length);
+                                            },
+                                            secondary: Icon( allComponents[compIndex2].kind == "userStory" ? Icons.people : (allComponents[compIndex2].kind == "functional" ? Icons.build : Icons.computer)),
+
+                                          );
+                                        }
+                                      ),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        child: Text("Confirm"),
+                                        onPressed: () {
+                                          //
+                                          for (var i = 0; i < allComponents.length; i++) {
+                                            if (_isSelectedList[i]==true) {
+                                              //print(components[i].description);
+                                              _addLink(devComponents[compIndex].id, allComponents[i].id);
+                                            }
+                                          }
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                }
+                              );
+                            },
+                          );
+                        }
+                      ),
+                      IconButton(
                         tooltip: "Edit this component",
                         color:Colors.white, 
                         icon: Icon(Icons.edit),
@@ -608,6 +591,20 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                           );
                         },
                       ),
+                      Expanded(child: Container()),
+                      IconButton(
+                        tooltip: "Open linked components",
+                        icon: Icon(Icons.arrow_forward,color: Colors.white,), 
+                        onPressed: (){
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context) =>InspectView(currentComponent: devComponents[compIndex],currentProject: myProject,),
+                            ),
+                          );
+                        }
+                      ),
+                      
                     ],
                   )
                   
