@@ -1,18 +1,56 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview_component.dart';
+import 'package:frontend/widgets/project/project.dart';
+import 'dart:math' as math;
+import 'package:http/http.dart' as http;
+import 'package:frontend/Models/link.dart';
+import 'package:frontend/helpers/api_manager.dart' as api;
 
 class InspectView extends StatefulWidget {
   final ArchViewComponent currentComponent;
-  InspectView({Key key, this.currentComponent}) : super(key: key);
+  final Project currentProject;
+  InspectView({Key key, this.currentComponent, this.currentProject}) : super(key: key);
 
   @override
-  _InspectViewState createState() => _InspectViewState(currentComponent);
+  _InspectViewState createState() => _InspectViewState(currentComponent,currentProject);
 }
 
 class _InspectViewState extends State<InspectView> {
   final ArchViewComponent currentComponent;
+  final Project currentProject;
+  String projectID;
+  String componentID;
+  List<ArchViewComponent> linkedUserStories;
+  List<ArchViewComponent> linkedFuncViews;
+  List<ArchViewComponent> linkedDeveloperViews;
+  List<ArchViewComponent> linkedComponents;
+  _InspectViewState(this.currentComponent, this.currentProject);
 
-  _InspectViewState(this.currentComponent);
+  @override
+  void initState() {
+    this.projectID = currentProject.id;
+    this.componentID = currentComponent.id;
+    this.fetchLinkedComponents(http.Client());
+    super.initState();
+  }
+
+  void fetchLinkedComponents(http.Client client) async {
+    linkedComponents = await api.APIManager.listLinkedComponents(projectID, componentID);
+    setState(() => {
+      for (ArchViewComponent comp in linkedComponents) {
+        if(comp.kind=="userStory"){
+          linkedUserStories.add(comp)
+        }
+        else if(comp.kind=="development"){
+          linkedDeveloperViews.add(comp)
+        }
+        else{
+          linkedFuncViews.add(comp)
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +75,7 @@ class _InspectViewState extends State<InspectView> {
 
             ),
             child: Text(
-              "Component Name",
+              currentComponent.description,
               style: TextStyle(
                 color: Colors.white,
                 fontSize:50,
@@ -57,8 +95,12 @@ class _InspectViewState extends State<InspectView> {
         Expanded(
           child: Row(
             children:<Widget>[
+              //Just space
               Expanded(flex: 1,child: Container(),),
-              Expanded(
+              //Related compenent list1
+              (currentComponent.kind!="userStory")
+              //If current component type is not userStory then this component list will be userStory type.
+              ?Expanded(
                 flex: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -78,7 +120,36 @@ class _InspectViewState extends State<InspectView> {
                         crossAxisSpacing: 10,
                       ),
                       padding: EdgeInsets.all(10),
-                      itemCount: 10,
+                      itemCount: (linkedUserStories!=null)?linkedUserStories.length:0,
+                      itemBuilder: (BuildContext context, int index){
+                       return Container(color:Colors.pink,child: Text(linkedUserStories[index].description),);
+                      }
+                    ),
+                  ),
+                ),
+              )
+              //If current component type is userStory then this component list will be development type.
+              :Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border:Border.all(
+                        color: Colors.pink,
+                        width: 5
+                      )
+                    ),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 4,
+                        crossAxisSpacing: 10,
+                      ),
+                      padding: EdgeInsets.all(10),
+                      itemCount: (linkedDeveloperViews!=null)?linkedDeveloperViews.length:0,
                       itemBuilder: (BuildContext context, int index){
                        return Container(color:Colors.pink,child: Text("comp $index"),);
                       }
@@ -86,8 +157,41 @@ class _InspectViewState extends State<InspectView> {
                   ),
                 ),
               ),
+              //Space again
               Expanded(flex: 1,child: Container()),
-              Expanded(
+              //Related compenent list2
+              (currentComponent.kind=="functional")
+              //If current component type is functional then this component list will be development type.
+              ?Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border:Border.all(
+                        color: Colors.pink,
+                        width: 5
+                      )
+                    ),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 4,
+                        crossAxisSpacing: 10,
+                      ),
+                      padding: EdgeInsets.all(10),
+                      itemCount: (linkedDeveloperViews!=null)?linkedDeveloperViews.length:0,
+                      itemBuilder: (BuildContext context, int index){
+                       return Container(color:Colors.pink,child: Text("comp $index"),);
+                      }
+                    ),
+                  ),
+                ),
+              )
+              //If current component type is not functional then this component list will be functional type.
+              :Expanded(
                 flex: 3,
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -107,14 +211,15 @@ class _InspectViewState extends State<InspectView> {
                         childAspectRatio: 4,
                         crossAxisSpacing: 10,
                       ),
-                      itemCount: 10,
+                      itemCount: (linkedFuncViews!=null)?linkedFuncViews.length:0,
                       itemBuilder: (BuildContext context, int index){
-                       return Container(color: Colors.purple,child: Text("comp $index"),);
+                       return Container(color: Colors.purple,child: Text(linkedFuncViews[index].description),);
                       }
                     ),
                   ),
                 ),
               ),
+              // Last Space
               Expanded(flex: 1,child: Container())
             ]
           ),
