@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/constants/app_colors.dart';
 import 'package:frontend/views/archviews/arch_views.dart';
-import 'package:frontend/views/development/development_view.dart';
-import 'package:frontend/views/functional_view/functional_view.dart';
 import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/login/login_view.dart';
 import 'package:frontend/widgets/project/project.dart';

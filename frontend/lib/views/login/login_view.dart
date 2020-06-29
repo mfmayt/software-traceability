@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/views/development/development_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key key}) : super(key: key);
@@ -47,12 +46,6 @@ class _LoginViewState extends State<LoginView> {
                   child: Text("Login",),
                   onLongPress: (){
                     changeColor(Colors.purple);
-                    Navigator.push(
-                      context, 
-                      MaterialPageRoute(
-                       builder: (context) => DevelopmentView()
-                      ),
-                    );
                   },
                 ),
                 Container(

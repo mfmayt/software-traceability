@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview_component.dart';
 import 'package:frontend/widgets/project/project.dart';
-import 'dart:math' as math;
 import 'package:http/http.dart' as http;
-import 'package:frontend/Models/link.dart';
 import 'package:frontend/helpers/api_manager.dart' as api;
 
 class InspectView extends StatefulWidget {

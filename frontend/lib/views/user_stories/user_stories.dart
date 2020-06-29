@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/Models/archview.dart';
-import 'package:frontend/views/home/home_view.dart';
 import 'package:frontend/views/inspect/inspect_view.dart';
 import 'package:frontend/views/login/login_view.dart';
-import 'package:frontend/views/main/main_screen.dart';
 import 'package:frontend/widgets/project/project.dart';
 import 'package:http/http.dart' as http;
 
