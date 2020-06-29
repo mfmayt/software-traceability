@@ -199,7 +199,8 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   addFunction(int compIndex, String funcName){
     setState(() {
       devComponents[compIndex].functions.add(funcName);
-      if(devComponents[compIndex].variables==null){
+      if(devComponents[compIndex].variables == null){
+        devComponents[compIndex].variables = [];
         ArchViewComponent updatedComponent = ArchViewComponent(
           projectID: this.projectID,
           viewID: this.viewID,

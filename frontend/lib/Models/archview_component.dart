@@ -4,10 +4,10 @@ class ArchViewComponent {
     final String projectID;
     final String viewID;
     final String kind;
-    final String description;
-    final List<String> links;
-    final List<String> functions;
-    final List<String> variables;
+    String description;
+    List<String> links;
+    List<String> functions;
+    List<String> variables;
     final int level;
 
     ArchViewComponent({this.id, this.description, this.kind, this.projectID, this.userKind, this.functions, this.variables, this.links, this.viewID, this.level});
@@ -19,9 +19,9 @@ class ArchViewComponent {
         projectID: json['projectID'] as String,
         viewID: json['viewID'] as String,
         userKind: json['userKind'] as String,
-        functions: json["functions"] != null ? List.from(json["functions"]) : null,
+        functions: json["functions"] != null ? List.from(json["functions"]) : [],
         links: json["links"] != null ? List.from(json["links"]) : null,
-        variables: json["variables"] != null ? List.from(json["variables"]) : null,
+        variables: json["variables"] != null ? List.from(json["variables"]) : [],
         kind: json["kind"] as String,
         level: json["level"] as int,
       );
