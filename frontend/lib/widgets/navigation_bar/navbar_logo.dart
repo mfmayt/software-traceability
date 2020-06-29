@@ -11,6 +11,6 @@ class NavBarLogo extends StatelessWidget {
         child: FlatButton(
          onPressed: null,
          padding: EdgeInsets.all(0.0),
-         child: Image.asset('assets/logo.png'))));
+         child: Image.asset('assets/guc.png'))));
   }
 }

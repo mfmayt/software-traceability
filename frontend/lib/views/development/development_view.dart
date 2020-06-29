@@ -308,9 +308,9 @@ class _DevelopmentViewState extends State<DevelopmentView> {
             return devComponents.length != compIndex 
             ?Container(
               decoration: BoxDecoration(
-                color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+                color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.6),
                 border: Border.all(
-                  color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0),
+                  color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(0.8),
                   width: 4,
                 ),
                 borderRadius: BorderRadius.circular(8)
@@ -402,7 +402,8 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                               builder: (context) =>InspectView(currentComponent: devComponents[compIndex],currentProject: myProject,),
                             ),
                           );
-                        })
+                        }
+                      )
                     ],
                   ),
                   Row(
