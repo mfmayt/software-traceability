@@ -269,6 +269,7 @@ class _UserStoriesState extends State<UserStories> {
           ),
           new Expanded(
             child: ListView.builder(
+              itemCount: userStories.length,
               itemBuilder: (BuildContext context, int index) {
                 final userStory = userStories[index];
                 return Padding(
@@ -305,7 +306,6 @@ class _UserStoriesState extends State<UserStories> {
                   ),
                 );
               },
-              itemCount: userStories.length,
             ),
           ),
         ],

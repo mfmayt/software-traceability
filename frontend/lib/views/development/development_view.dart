@@ -34,12 +34,12 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   void initState() { 
     
     this.projectID = myProject.id;
-    this.viewID = myProject.functionalView;
+    this.viewID = myProject.developmentView;
 
     fetchArchViewComponents(http.Client());
     fetchAllArchViewComponents(http.Client());
     fetchArchView(http.Client());
-    
+    print(devComponents);
     super.initState();
 
     
@@ -48,6 +48,8 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   void fetchArchViewComponents(http.Client client) async {
     devComponents = await api.APIManager.getArchViewComponents(projectID, viewID);
     setState(() => {
+      
+      /*
       for (var comp in devComponents) {
         isEditable.add(true),
         compNames.add(comp.description),
@@ -58,6 +60,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
           functions.add(comp.functions)
         }
       }
+      */
     });
   }
   //Gango function2
@@ -73,17 +76,17 @@ class _DevelopmentViewState extends State<DevelopmentView> {
     setState(() => {
     });
   }
-  /*
-  void updateComponent(ArchView archView,int index)async{
-    bool a = await api.APIManager.patchArchView(archView, projectID, viewID);
+  
+  void updateComponent(ArchViewComponent updatedComponent,int index)async{
+    bool a = await api.APIManager.patchArchViewComponent(updatedComponent, projectID, viewID);
     setState(() {
       if(a){
-        //devComponents[index] = updatedComp;
+        devComponents[index] = updatedComponent;
       }
     });
     
   }
-  */
+  
   // Gango function4
   _addLink(String from, String to) async {
     Link l = Link(
@@ -96,14 +99,17 @@ class _DevelopmentViewState extends State<DevelopmentView> {
     print(addedLink.id);
   }
 
-  dynamic addComponent(int compIndex) async{
+  dynamic addComponent(String compDesc) async{
     
     ArchViewComponent component = ArchViewComponent(
       projectID: this.projectID, 
       viewID: this.viewID, 
+      description: compDesc,
+      /*
       description: compNames[compIndex],
       variables: variables[compIndex],
       functions: functions[compIndex],
+      */
       kind: "development",);
 
     bool _ = await api.APIManager.addArchViewComponent(component, this.projectID, this.viewID);
@@ -117,19 +123,102 @@ class _DevelopmentViewState extends State<DevelopmentView> {
   
   editComponent(int compIndex, String newCompName){
     setState(() {
-      compNames[compIndex] = newCompName;
+      
+      if(devComponents[compIndex].variables==null&&devComponents[compIndex].functions==null){
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: newCompName,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }
+      else if(devComponents[compIndex].variables!=null&&devComponents[compIndex].functions==null){
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: newCompName,
+          variables: devComponents[compIndex].variables,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }
+      else if(devComponents[compIndex].variables==null&&devComponents[compIndex].functions!=null){
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: newCompName,
+          functions: devComponents[compIndex].functions,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }
+      else {
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: newCompName,
+          variables: devComponents[compIndex].variables,
+          functions: devComponents[compIndex].functions,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);        
+      }
+      
+      
+      //compNames[compIndex] = newCompName;
     });
   }
   
   addVariable(int compIndex,String varName){
     setState(() {
-      variables[compIndex].add(varName);
+      devComponents[compIndex].variables.add(varName);
+      if(devComponents[compIndex].functions==null){
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: devComponents[compIndex].description,
+          variables: devComponents[compIndex].variables,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }else{
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: devComponents[compIndex].description,
+          variables: devComponents[compIndex].variables,
+          functions: devComponents[compIndex].functions,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }
     });
   }
 
   addFunction(int compIndex, String funcName){
     setState(() {
-      functions[compIndex].add(funcName);
+      devComponents[compIndex].functions.add(funcName);
+      if(devComponents[compIndex].variables==null){
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: devComponents[compIndex].description,
+          functions: devComponents[compIndex].functions,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }else{
+        ArchViewComponent updatedComponent = ArchViewComponent(
+          projectID: this.projectID,
+          viewID: this.viewID,
+          description: devComponents[compIndex].description,
+          variables: devComponents[compIndex].variables,
+          functions: devComponents[compIndex].functions,
+          kind: "development",
+        );
+        updateComponent(updatedComponent, compIndex);
+      }
     });
   }
   
@@ -193,7 +282,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
       body: Padding(
         padding: const EdgeInsets.all(30.0),
         child: GridView.builder(
-          itemCount: devComponents.length+1,
+          itemCount: (devComponents!=null) ?devComponents.length+1:1,
           gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 4,
             mainAxisSpacing: 30,
@@ -232,10 +321,58 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         ), 
                         onPressed: (){
                           showDialog(
+                            barrierDismissible: false,
                             context: context,
-                            builder: (BuildContext context) => AlertDialog(
+                            builder: (context){
+                              List<bool> _isSelectedList = [];
+                              for (var i = 0; i < allComponents.length; i++) {
+                                _isSelectedList.add(false);
+                              }
+                              return StatefulBuilder(
+                                builder: (context , setState2){
+                                  return AlertDialog(
+                                    elevation: 24.0,
+                                    title: Text("Select components to link"),
+                                    content: Container(
+                                      width: 400,
+                                      child: ListView.builder(
+                                        itemCount: allComponents.length,
+                                        itemBuilder: (BuildContext context,int compIndex2){
+                                          return CheckboxListTile(
+                                            value: _isSelectedList[compIndex2],
+                                            title: Text(allComponents[compIndex2].description),
+                                            onChanged: (bool newValue){
+                                              setState2(() {
+                                                _isSelectedList[compIndex2] = newValue;
+                                              });
+                                              //print(components.length);
+                                              //print(_isSelectedList.length);
+                                            },
+                                            secondary: Icon( allComponents[compIndex2].kind == "userStory" ? Icons.people : (allComponents[compIndex2].kind == "functional" ? Icons.build : Icons.computer)),
 
-                            )
+                                          );
+                                        }
+                                      ),
+                                    ),
+                                    actions: [
+                                      FlatButton(
+                                        child: Text("Confirm"),
+                                        onPressed: () {
+                                          //
+                                          for (var i = 0; i < allComponents.length; i++) {
+                                            if (_isSelectedList[i]==true) {
+                                              //print(components[i].description);
+                                              _addLink(devComponents[compIndex].id, allComponents[i].id);
+                                            }
+                                          }
+                                          Navigator.of(context, rootNavigator: true).pop('dialog');
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                }
+                              );
+                            },
                           );
                         }
                       )
@@ -295,10 +432,10 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         Expanded(
                           child: ListView.builder(
                             padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            itemCount: devComponents[index][2].length,
+                            itemCount: (devComponents[compIndex].variables!=null)?devComponents[compIndex].variables.length:0,
                             itemBuilder: (BuildContext contex,int varIndex){
                               return Text(
-                                devComponents[index][2][varIndex],
+                                devComponents[compIndex].variables[varIndex],
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -341,7 +478,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                   color: Colors.blue,
                                   child: Text("Confirm"),
                                   onPressed: (){
-                                    addFunction(index, varNameController.text);
+                                    addFunction(compIndex, varNameController.text);
                                     varNameController.clear();
                                     Navigator.of(context, rootNavigator: true).pop('dialog');
                                   },
@@ -366,10 +503,10 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         Expanded(
                           child: ListView.builder(
                             padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            itemCount: devComponents[index][3].length,
+                            itemCount: (devComponents[compIndex].functions!=null)?devComponents[compIndex].functions.length:0,
                             itemBuilder: (BuildContext contex,int funcIndex){
                               return Text(
-                                devComponents[index][3][funcIndex],
+                                devComponents[compIndex].functions[funcIndex],
                                 style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -393,7 +530,19 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         onPressed: (){
                           showDialog(
                             context: context,
-                            builder: (_) => AlertDialog(
+                            builder: (_) => (devComponents[compIndex].variables==null||devComponents[compIndex].variables==null)
+                            ?AlertDialog(
+                              title: Text("First add some variables and functions"),
+                              content: Text("To edit this component first you have to add some variables and functions"),
+                              actions: [
+                                FlatButton(
+                                  onPressed: (){Navigator.of(context, rootNavigator: true).pop('dialog');}, 
+                                  child: Text("confirm")
+                                )
+                              ],
+                            )
+                            
+                            :AlertDialog(
                               title: Text("Edit this component"),
                               content: Container(
                                 height: 200,
@@ -406,18 +555,20 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                                       controller: compNameController,
                                       maxLength: 30,
                                     ),
+                                    /*
                                     Text("Description : "),
                                     TextField(
                                       controller: compDescController,
                                       maxLength: 150,
                                     ),
+                                    */
                                   ]
                                 ),
                               ),
                               actions: [
                                 FlatButton(
                                   onPressed: (){
-                                    editComponent(index,compNameController.text,compDescController.text);
+                                    editComponent(compIndex,compNameController.text);
                                     compNameController.clear();
                                     compDescController.clear();
                                     Navigator.of(context, rootNavigator: true).pop('dialog');
@@ -478,7 +629,7 @@ class _DevelopmentViewState extends State<DevelopmentView> {
                         actions: [
                           FlatButton(
                             onPressed: (){
-                              addNewComponent(compNameController.text,compDescController.text);
+                              addComponent(compNameController.text);
                               compNameController.clear();
                               compDescController.clear();
                               Navigator.of(context, rootNavigator: true).pop('dialog');

@@ -151,6 +151,24 @@ class APIManager{
     }
     return false;
   }
+  static Future<bool> patchArchViewComponent(ArchViewComponent ac, String projectID, String viewID) async{
+    final String url = getRESTEndpoint(archViewComponents, params: {'projectID': projectID, 'viewID': viewID, 'componentID': ac.id});
+    final String body = jsonEncode(ac);
+
+    final response = await http.patch(
+      url,
+      headers: {
+        HttpHeaders.authorizationHeader: getToken(),
+        HttpHeaders.contentTypeHeader: 'application/json'
+        },
+      body: body,
+    );
+
+    if (response.statusCode == 200){
+      return true;
+    }
+    return false;
+  }
 
   static Future<Link> addLink(Link l) async{
     final String url = getRESTEndpoint(link, params: {'projectID': l.projectID, 'linkID': ''});
